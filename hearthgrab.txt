@@ -1,4 +1,4 @@
-[{"count": 2, "name": "Innervate"
+{"count": 2, "name": "Innervate"
 {"count": 2, "name": "Moonfire"
 {"count": 2, "name": "Claw"
 {"count": 2, "name": "Living Roots"
