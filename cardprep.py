@@ -20,6 +20,9 @@ def update_progress(progress, counter):
 	counter))
 	sys.stdout.flush()
 
+if not os.path.exists(os.getcwd() + '/card_templates/'):
+	os.makedirs(os.getcwd() + '/card_templates/')
+	
 start_time = time.clock()
 for imagePath in glob.glob(os.getcwd() + '/source_cards/*'):
 	im = cv2.imread(imagePath)
