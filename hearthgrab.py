@@ -13,15 +13,17 @@ import win32api, win32con
 import math
 import csv, json
 
+MATCHING_METHODS = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR', 'cv2.TM_CCORR_NORMED', 'cv2.TM_SQDIFF', 'cv2.TM_SQDIFF_NORMED']
 PROGRESS_BAR_LENGTH = 20
 CARD_POSITIONS = [[171,159],[372,159],[573,159],[774,159],[171,476],[372,476],[573,476],[774,476]]
-#CARD_POSITIONS = [[215,163],[415,163],[615,163],[815,163],[216,486],[416,486],[616,486],[816,486]]
 NEXT_PAGE_CLICK_POINT = [947,445]
 CARD_SIZE = [174, 246]
-#CARD_SIZE = [87, 123]
-TOTAL_NUMBER_OF_TEMPLATE_CARDS = len(glob.glob(os.getcwd() + '/cards/*'))
+TOTAL_NUMBER_OF_CARD_TEMPLATES = len(glob.glob(os.getcwd() + '/card_templates/*'))
 SIMILARITY_TOLERANCE = 10
 PAGE_TURN_TIME = 0.3 #0.3
+TWOEX_SIZE = [20,25]
+CLASS_POSITION = [471,86]
+CLASS_SIZE = [170,35]
 
 def update_progress(progress, counter):
 	sys.stdout.write("\r[{0}{1}] {2}% ({3})".format('#'*(int(math.ceil(progress*PROGRESS_BAR_LENGTH))),\
@@ -34,19 +36,26 @@ def update_progress(progress, counter):
 card_data = {}
 with open('cardnames.csv', 'rb') as f:
 	reader = csv.reader(f)
-	card_data = {int(rows[0]):[rows[1], rows[2]] for rows in reader}
+	card_data = {int(rows[1]):[rows[0], rows[2], rows[3]] for rows in reader} # Name, ID, class, cost
 
 ### Load all template cards
 print("> Loading all template cards")
-TEMPLATE_CARDS = [] ## TODO: Store cardname as index?
+CARD_TEMPLATES = [] 
+CLASS_TEMPLATES = [] 
 card_index = 0
 start_time = time.clock()
-for imagePath in glob.glob(os.getcwd() + '/cards/*'):
+for imagePath in glob.glob(os.getcwd() + '/card_templates/*'):
 	base = os.path.basename(imagePath)
 	cardname = os.path.splitext(base)[0]
-	TEMPLATE_CARDS.append([cardname, cv2.cvtColor(cv2.imread(imagePath), cv2.COLOR_BGR2GRAY)])
+	CARD_TEMPLATES.append([cardname, cv2.cvtColor(cv2.imread(imagePath), cv2.COLOR_BGR2GRAY)])
 	card_index = card_index + 1
-	update_progress(float(card_index) / float(TOTAL_NUMBER_OF_TEMPLATE_CARDS), card_index)
+	update_progress(float(card_index) / float(TOTAL_NUMBER_OF_CARD_TEMPLATES), card_index)
+
+class_names_in_order = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior', 'neutral']
+
+for class_name in class_names_in_order:
+	imagePath = os.getcwd() + '/class_templates/' + class_name + '.png'
+	CLASS_TEMPLATES.append([class_name, cv2.cvtColor(cv2.imread(imagePath), cv2.COLOR_BGR2GRAY)])
 end_time = time.clock()
 print(" in %.2f seconds." % (end_time - start_time))
 
@@ -90,24 +99,34 @@ print("> Fetching all cards")
 
 start_time = time.clock()
 grabbed_cards = []
-TWOEX_SIZE = [20,25]
+
+
 while (True):
 	### Move the cursor so it does not trigger visual effects
 	win32api.SetCursorPos((NEXT_PAGE_CLICK_POINT[0],NEXT_PAGE_CLICK_POINT[1]))
 	
 	### Take screenshot
 	gray_window = takeScreenshot()
+
+	### Find which class we are looking at #NOTE: its img[y: y + h, x: x + w] 
+	class_image = gray_window[CLASS_POSITION[1]: CLASS_POSITION[1] + CLASS_SIZE[1], CLASS_POSITION[0]: CLASS_POSITION[0] + CLASS_SIZE[0]]
+	for class_template in CLASS_TEMPLATES:
+		class_result = cv2.matchTemplate(class_image, class_template[1], eval(MATCHING_METHODS[1]))
+		(_, class_maxVal, _, _) = cv2.minMaxLoc(class_result)
+		if (class_maxVal > 0.8):
+			current_class = class_template[0]
+			break
 	
 	### Find the cards on each page
 	for card_position in CARD_POSITIONS:
 		card_image = gray_window[card_position[1]:card_position[1]+CARD_SIZE[1],card_position[0]:card_position[0]+CARD_SIZE[0]]
+		
 		x2_image = gray_window[card_position[1] + CARD_SIZE[1] : card_position[1] + CARD_SIZE[1] + TWOEX_SIZE[1],\
 		card_position[0] + CARD_SIZE[0] / 2 - TWOEX_SIZE[0] : card_position[0] + CARD_SIZE[0] / 2 + TWOEX_SIZE[0]]
-		#cv2.rectangle(gray_window, (card_position[0], card_position[1]), (card_position[0] + CARD_SIZE[0], card_position[1] + CARD_SIZE[1]), (0, 0, 255), 1)
-		#cv2.rectangle(gray_window, (card_position[0] + CARD_SIZE[0] / 2 - TWOEX_SIZE[0], card_position[1] + CARD_SIZE[1]),\
-		#(card_position[0] + CARD_SIZE[0] / 2 + TWOEX_SIZE[0], card_position[1] + CARD_SIZE[1] + TWOEX_SIZE[1]), (0, 0, 255), 1)
-		grabbed_cards.append([card_image, x2_image])
-	#cv2.imshow("allcards", x2_image)
+		
+		#cv2.rectangle(gray_window, (CLASS_POSITION[0], CLASS_POSITION[1]), (CLASS_POSITION[0] + CLASS_SIZE[0], CLASS_POSITION[1] + CLASS_SIZE[1]), (0, 0, 255), 1)
+		grabbed_cards.append([card_image, x2_image, current_class])
+	#cv2.imshow("allcards", gray_window)
 	#cv2.waitKey(0)
 	#sys.exit()
 	
@@ -128,48 +147,52 @@ print("Collected all cards in %.2f seconds." % (end_time - start_time))
 print "Found: " + str(len(grabbed_cards))
 
 ### Save all found cards
-print("> Saving all found cards")
-start_time = time.clock()
-card_index = 0
-for card in grabbed_cards:
-	cv2.imwrite(os.getcwd() + '/grabbed_cards/' + str(card_index) + '.png', card[0])
-	card_index = card_index + 1
-	update_progress(float(card_index) / float(len(grabbed_cards)), card_index)
-end_time = time.clock()
-print(" in %.2f seconds." % (end_time - start_time))
+# print("> Saving all found cards")
+# start_time = time.clock()
+# card_index = 0
+# for card in grabbed_cards:
+	# cv2.imwrite(os.getcwd() + '/grabbed_cards/' + str(card_index) + '.png', card[0])
+	# card_index = card_index + 1
+	# update_progress(float(card_index) / float(len(grabbed_cards)), card_index)
+# end_time = time.clock()
+# print(" in %.2f seconds." % (end_time - start_time))
 
 ### Match all found cards
 print("> Matching all found cards")
 
 start_time = time.clock()
 card_index = 0
+last_matched_cost = 0
+last_matched_class_name = ''
 matched_cards = []
 failed_cards = []
 x2_template = cv2.cvtColor(cv2.imread('x2.png'), cv2.COLOR_BGR2GRAY)
 for card in grabbed_cards:
-	template_index = 0
 	card_hearthpwn_id = None
 	max_val = 0
+	current_class_name = card[2]
+	if (current_class_name != last_matched_class_name):
+		last_matched_cost = 0
 	
-	for template in TEMPLATE_CARDS:
-		#template_crop = template[4:CARD_SIZE[1] + 4,\
-		#CARD_SIZE[0]/2 + 4:CARD_SIZE[0] + (CARD_SIZE[0]/2 + 4)]
-		template_crop = template[1][10:CARD_SIZE[1], 10:CARD_SIZE[0]]
-		# cv2.imshow(str(template_index), template_crop)
-		# cv2.waitKey(0)
-		# sys.exit()
-		methods = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR',\
-		'cv2.TM_CCORR_NORMED', 'cv2.TM_SQDIFF', 'cv2.TM_SQDIFF_NORMED']
-		result = cv2.matchTemplate(card[0], template_crop, eval(methods[1]))
-		(_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
+	for template in CARD_TEMPLATES:
+		template_class_name = card_data[int(template[0])][1]
+		if (template_class_name == ''):
+			template_class_name = 'neutral'
+		template_cost = card_data[int(template[0])][2]
 		
-		if (maxVal > max_val):
-			card_hearthpwn_id = template[0]
-			max_val = maxVal
-		template_index = template_index + 1
+		if (template_cost < last_matched_cost):
+			continue
+
+		if (current_class_name == template_class_name.lower()):
+			template_crop = template[1][10:CARD_SIZE[1], 10:CARD_SIZE[0]]
+			result = cv2.matchTemplate(card[0], template_crop, eval(MATCHING_METHODS[1]))
+			(_, maxVal, _, _) = cv2.minMaxLoc(result)	
+			if (maxVal > max_val):
+				card_hearthpwn_id = template[0]
+				max_val = maxVal		
 		
 	if (max_val > 0.45):
-		x2_result = cv2.matchTemplate(card[1], x2_template, eval(methods[1]))
+		x2_result = cv2.matchTemplate(card[1], x2_template, eval(MATCHING_METHODS[1]))
 		(_, x2_maxVal, _, x2_maxLoc) = cv2.minMaxLoc(x2_result)
 		has_x2 = x2_maxVal > 0.8
 		
@@ -180,7 +203,8 @@ for card in grabbed_cards:
 		match_data = {}
 		match_data['count'] = card_count
 		match_data['name'] = card_data[int(card_hearthpwn_id)][0]
-		#print str(len(card_data)) + " card data"
+		last_matched_class_name = card_data[int(card_hearthpwn_id)][1]
+		last_matched_cost = card_data[int(card_hearthpwn_id)][2]
 		matched_cards.append(match_data)
 	else:
 		failed_cards.append(card_index)

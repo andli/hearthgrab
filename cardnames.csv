@@ -1,722 +1,822 @@
-94,Molten Giant,
-12201,Clockwork Giant,
-264,Mountain Giant,
-401,Mind Control,Priest
-496,Pyroblast,Mage
-474,Deathwing,
-22262,Frost Giant,
-614,Sea Giant,
-22342,Varian Wrynn,Warrior
-12270,Tree of Life,Druid
-303,Alexstrasza,
-22324,Anub'arak,Rogue
-22325,Aviana,Druid
-605,Cenarius,Druid
-22338,Icehowl,
-194,King Krush,Hunter
-482,Lord Jaraxxus,Warlock
-14456,Majordomo Executus,
-12294,Mal'Ganis,Warlock
-241,Malygos,
-12196,Mekgineer Thermaplugg,
-14448,Nefarian,
-22289,North Sea Kraken,
-285,Nozdormu,
-432,Onyxia,
-14458,Volcanic Lumberer,Druid
-495,Ysera,
-506,Lay on Hands,Paladin
-398,Twisting Nether,Warlock
-335,Al'Akir the Windlord,Shaman
-14451,Chromaggus,
-12217,Foe Reaper 4000,
-12248,Force-Tank MAX,
-643,Grommash Hellscream,Warrior
-18,Gruul,
-238,Ironbark Protector,Druid
-7742,Kel'Thuzad,
-503,Ragnaros the Firelord,
-22343,Rhonin,Mage
-12187,Sneed's Old Shredder,
-391,Tirion Fordring,Paladin
-278,Gladiator's Longbow,Hunter
-96,Gorehowl,Warrior
-12303,Crush,Warrior
-44,Flamestrike,Mage
-90,Sprint,Rogue
-22393,Acidmaw,Hunter
-34,Ancient of Lore,Druid
-242,Ancient of War,Druid
-220,Archmage Antonidas,Mage
-539,Baron Geddon,
-22377,Captured Jormungar,
-22353,Chillmaw,
-22368,Confessor Paletress,Priest
-173,Core Hound,
-12182,Dr. Boom,
-22313,Eadric the Pure,Paladin
-22391,Fearsome Doomguard,Warlock
-12290,Flame Leviathan,Mage
-12232,Gahz'rilla,Hunter
-283,Guardian of Kings,Paladin
-22360,Knight of the Wild,Druid
-12293,Malorne,Druid
-12292,Neptulon,Shaman
-27222,Obsidian Destroyer,Warrior
-228,Prophet Velen,Priest
-518,Ravenholdt Assassin,
-14438,Rend Blackhand,
-22260,Skycap'n Kragg,
-310,Stormwind Champion,
-12272,Troggzor the Earthinator,
-323,War Golem,
-142,Avenging Wrath,Paladin
-22272,Ball of Spiders,Hunter
-276,Blizzard,Mage
-22388,Dark Bargain,Warlock
-12298,Dark Wispers,Druid
-22380,Enter the Coliseum,Paladin
-237,Force of Nature,Druid
-457,Holy Fire,Priest
-12301,Lightbomb,Priest
-12279,Recycle,Druid
-573,Siphon Soul,Warlock
-667,Starfire,Druid
-658,Vanish,Rogue
-12245,Anima Golem,Warlock
-545,Archmage,
-463,Argent Commander,
-22346,Bolf Ramshield,
-60,Boulderfist Ogre,
-147,Cabal Shadow Priest,Priest
-498,Cairne Bloodhoof,
-22261,Coldarra Drake,Mage
-14449,Drakonid Crusher,
-36,Dread Infernal,Warlock
-14454,Emperor Thaurissan,
-636,Fire Elemental,Shaman
-598,Frost Elemental,
-131,Gadgetzan Auctioneer,
-12287,Gazlowe,
-251,Gelbin Mekkatorque,
-22326,Grand Crusader,
-39,Hogger,
-203,Illidan Stormrage,
-12295,Iron Juggernaut,Warrior
-22276,Justicar Trueheart,
-562,Kidnapper,Rogue
-22266,Kodorider,
-414,Lord of the Arena,
-7747,Maexxna,
-22317,Master Jouster,
-12226,Mech-Bear-Cat,Druid
-12282,Mogor the Ogre,
-22382,Mogor's Champion,
-22394,Mysterious Challenger,Paladin
-12175,Piloted Sky Golem,
-138,Priestess of Elune,
-560,Reckless Rocketeer,
-27228,Reno Jackson,
-8,Savannah Highmane,Hunter
-22339,Sea Reaver,Warrior
-12215,Shieldmaiden,Warrior
-22372,Sideshow Spelleater,
-221,Sunwalker,
-33,Sylvanas Windrunner,
-232,Temple Enforcer,Priest
-179,The Beast,
-396,The Black Knight,
-22349,The Mistcaller,Shaman
-22314,The Skeleton Knight,
-12225,Toshley,
-12291,Trade Prince Gallywix,Rogue
-22387,Void Crusher,Warlock
-14450,Volcanic Drake,
-22288,Wilfred Fizzlebang,Warlock
-675,Windfury Harpy,
-182,Arcanite Reaper,Warrior
-433,Assassin's Blade,Rogue
-172,Doomhammer,Shaman
-568,Assassinate,Rogue
-670,Bane of Doom,Warlock
-7,Blessed Champion,Paladin
-256,Bloodlust,Shaman
-297,Brawl,Warrior
-12304,Cobra Shot,Hunter
-12237,Demonheart,Warlock
-14446,Dragon's Breath,Mage
-114,Explosive Shot,Hunter
-22302,Flame Lance,Mage
-671,Holy Nova,Priest
-355,Holy Wrath,Paladin
-120,Nourish,Druid
-14453,Solemn Vigil,Paladin
-464,Starfall,Druid
-597,Abomination,
-12227,Antique Healbot,
-27241,Anubisath Sentinel,
-280,Azure Drake,
-14447,Blackwing Corruptor,
-12183,Blingtron 3000,
-12244,Bolvar Fordragon,Paladin
-12193,Bomb Lobber,
-27,Booty Bay Bodyguard,
-267,Captain Greenskin,
-22294,Clockwork Knight,
-12222,Cobalt Guardian,Paladin
-14434,Dark Iron Skulker,Rogue
-84,Darkscale Healer,
-27234,Djinni of Zephyrs,
-507,Doomguard,Warlock
-14452,Dragon Consort,Paladin
-587,Druid of the Claw,Druid
-12243,Druid of the Fang,Druid
-124,Earth Elemental,Shaman
-682,Elite Tauren Chieftain,
-450,Faceless Manipulator,
-12264,Fel Reaver,
-476,Fen Creeper,
-7745,Feugen,
-12271,Floating Watcher,Warlock
-604,Frostwolf Warlord,
-14435,Grim Patron,
-624,Gurubashi Berserker,
-602,Harrison Jones,
-12268,Hemet Nesingwary,
-12251,Junkbot,
-12285,King of Beasts,Hunter
-22355,Kvaldir Raider,
-674,Leeroy Jenkins,
-7746,Loatheb,
-12177,Madder Bomber,
-12190,Mimiron's Head,
-22318,Mukla's Champion,
-22264,Nexus-Champion Saraad,
-184,Nightblade,
-12235,Ogre Ninja,Rogue
-22375,Pit Fighter,
-12280,Quartermaster,Paladin
-22344,Ram Wrangler,Hunter
-22367,Recruiter,
-12263,Salty Dog,
-22305,Shado-Pan Rider,Rogue
-12275,Siege Engine,Warrior
-648,Silver Hand Knight,
-7749,Sludge Belcher,
-7751,Spectral Knight,
-627,Spiteful Smith,
-7744,Stalagg,
-389,Stampeding Kodo,
-101,Starving Buzzard,Hunter
-325,Stormpike Commando,
-338,Stranglethorn Tiger,
-27239,Summoning Stone,
-22271,Thunder Bluff Valiant,Shaman
-162,Tundra Rhino,Hunter
-22315,Tuskarr Jouster,Paladin
-12185,Upgraded Repair Bot,Priest
-509,Venture Co. Mercenary,
-12296,Vol'jin,Priest
-22331,Charged Hammer,Shaman
-7734,Death's Bite,Warrior
-22273,Poisoned Blade,Rogue
-293,Truesilver Champion,Paladin
-12218,Ancestor's Call,Shaman
-22334,Astral Communion,Druid
-266,Bite,Druid
-29,Blessing of Kings,Paladin
-26,Cone of Cold,Mage
-260,Consecration,Paladin
-12300,Echo of Medivh,Mage
-522,Fireball,Mage
-22332,Fist of Jaraxxus,Warlock
-350,Hammer of Wrath,Paladin
-122,Hellfire,Warlock
-12302,Imp-losion,Warlock
-249,Mass Dispel,Priest
-301,Mindgames,Priest
-345,Mortal Strike,Warrior
-407,Multi-Shot,Hunter
-7726,Poison Seeds,Druid
-595,Polymorph,Mage
-12236,Sabotage,Rogue
-442,Shadow Madness,Priest
-673,Shadowflame,Warlock
-311,Soul of the Forest,Druid
-620,Swipe,Druid
-12276,Tinker's Sharpsword Oil,Rogue
-572,Ancient Brewmaster,
-176,Ancient Mage,
-27245,Ancient Shade,
-7728,Anub'ar Ambusher,Rogue
-504,Arathi Weaponsmith,Warrior
-12246,Arcane Nullifier X-21,
-22312,Armored Warhorse,
-656,Auchenai Soulpriest,Priest
-14439,Axe Flinger,Warrior
-7740,Baron Rivendare,
-12233,Burly Rockjaw Trogg,
-31,Chillwind Yeti,
-14444,Core Rager,Hunter
-22308,Crowd Favorite,
-140,Cult Master,
-22359,Dalaran Aspirant,Mage
-128,Dark Iron Dwarf,
-542,Defender of Argus,
-22269,Draenei Totemcarver,Shaman
-14441,Dragonkin Sorcerer,
-472,Dragonling Mechanic,
-261,Dread Corsair,
-22337,Dreadsteed,Warlock
-12234,Dunemaul Shaman,Shaman
-12176,Enhance-o Mechano,
-125,Ethereal Arcanist,Mage
-22390,Evil Heckler,
-12221,Fel Cannon,Warlock
-14455,Fireguard Destroyer,Shaman
-22381,Frigid Snobold,
-246,Gnomish Inventor,
-12195,Goblin Blastmage,Mage
-22323,Gormok the Impaler,
-22287,Holy Champion,Priest
-225,Houndmaster,Hunter
-14436,Hungry Dragon,
-12216,Jeeves,
-459,Keeper of the Grove,Druid
-12252,Kezan Mystic,
-130,Kor'kron Elite,Warrior
-192,Lightspawn,Priest
-12284,Lost Tallstrider,
-22376,Magnataur Alpha,Warrior
-22259,Maiden of the Lake,
-127,Master of Disguise,Rogue
-12253,Mechanical Yeti,
-12262,Mini-Mage,
-346,Mogu'shan Warden,
-22362,Murloc Knight,Paladin
-15,Oasis Snapjaw,
-659,Ogre Magi,
-217,Old Murk-Eye,
-12191,Piloted Shredder,
-402,Pit Lord,Warlock
-22374,Refreshment Vendor,
-27244,Rumbling Elemental,Shaman
-22293,Savage Combatant,Druid
-12220,Screwjank Clunker,Warrior
-326,Sen'jin Shieldmasta,
-12277,Siltfin Spiritwalker,Shaman
-634,Silvermoon Guardian,
-22357,Spawn of Shadows,Priest
-42,Spellbreaker,
-603,Stormwind Knight,
-566,Summoning Portal,Warlock
-22290,Tournament Medic,
-360,Twilight Drake,
-22351,Twilight Guardian,
-523,Violet Teacher,
-7733,Voidcaller,Warlock
-7758,Wailing Soul,
-274,Water Elemental,Mage
-12261,Wee Spellstopper,Mage
-22361,Wildwalker,Druid
-151,Windspeaker,Shaman
-12228,Coghammer,Paladin
-12265,Cogmaster's Wrench,Rogue
-363,Eaglehorn Bow,Hunter
-22286,King's Defender,Warrior
-12211,Ogre Warmaul,Warrior
-82,Perdition's Blade,Rogue
-12269,Powermace,Shaman
-567,Sword of Justice,Paladin
-578,Animal Companion,Hunter
-489,Arcane Intellect,Mage
-22309,Bash,Warrior
-22397,Beneath the Grounds,Rogue
-12203,Bouncing Blade,Warrior
-22321,Burgle,Rogue
-646,Charge,Warrior
-531,Counterspell,Mage
-239,Deadly Shot,Hunter
-14463,Demonwrath,Warlock
-581,Divine Favor,Paladin
-332,Drain Life,Warlock
-7732,Duplicate,Mage
-22267,Effigy,Mage
-22345,Elemental Destruction,Shaman
-378,Fan of Knives,Rogue
-107,Far Sight,Shaman
-214,Feral Spirit,Shaman
-27216,Forgotten Torch,Mage
-49,Frost Nova,Mage
-135,Headcrack,Rogue
-258,Healing Touch,Druid
-22340,Healing Wave,Shaman
-270,Hex,Shaman
-672,Ice Barrier,Mage
-28,Ice Block,Mage
-488,Kill Command,Hunter
-679,Lava Burst,Shaman
-676,Lightning Storm,Shaman
-149,Mark of Nature,Druid
-569,Mirror Entity,Mage
-22383,Mulch,Druid
-12223,Muster for Battle,Paladin
-22396,Polymorph: Boar,Mage
-22384,Powershot,Hunter
-329,Savage Roar,Druid
-22373,Seal of Champions,Paladin
-327,Sense Demons,Warlock
-647,Shadow Bolt,Warlock
-547,Shadow Word: Death,Priest
-421,Shadowform,Priest
-493,Shield Block,Warrior
-309,Spellbender,Mage
-62,Thoughtsteal,Priest
-317,Unleash the Hounds,Hunter
-160,Vaporize,Mage
-12174,Velen's Chosen,Priest
-428,Acolyte of Pain,
-425,Alarm-o-Bot,
-23,Aldor Peacekeeper,Paladin
-97,Arcane Golem,
-22301,Argent Horserider,
-73,Big Game Hunter,
-14437,Blackwing Technician,
-75,Blood Knight,
-88,Coldlight Oracle,
-424,Coldlight Seer,
-22291,Coliseum Manager,
-388,Dalaran Mage,
-7736,Dancing Swords,
-7735,Dark Cultist,Priest
-7753,Deathlord,
-212,Demolisher,
-22369,Dragonhawk Rider,
-22389,Dreadscale,Hunter
-14457,Druid of the Flame,Druid
-557,Earthen Ring Farseer,
-3,Edwin VanCleef,Rogue
-625,Emperor Cobra,
-22295,Eydis Darkbane,
-236,Felguard,Warlock
-22378,Fencing Coach,
-22296,Fjola Lightbane,
-14445,Flamewaker,Mage
-610,Flesheating Ghoul,
-12247,Flying Machine,
-69,Frothing Berserker,Warrior
-12286,Gnomeregan Infantry,
-12199,Gnomish Experimenter,
-12213,Goblin Sapper,
-12273,Grove Tender,Druid
-386,Harvest Golem,
-12250,Hobgoblin,
-22392,Ice Rager,
-12214,Illuminator,
-14443,Imp Gang Boss,Warlock
-178,Imp Master,
-209,Injured Blademaster,
-12229,Iron Sensei,Rogue
-41,Ironforge Rifleman,
-519,Ironfur Grizzly,
-392,Jungle Panther,
-373,King Mukla,
-411,Kirin Tor Mage,Mage
-22341,Light's Champion,
-12239,Lil' Exorcist,
-362,Magma Rager,
-613,Mana Tide Totem,Shaman
-22306,Master of Ceremonies,
-12254,Metaltooth Leaper,Hunter
-368,Mind Control Tech,
-222,Murloc Warleader,
-12281,Ogre Brute,
-22395,Orgrimmar Aspirant,Warrior
-157,Questing Adventurer,
-95,Raging Worgen,
-502,Raid Leader,
-47,Razorfen Hunter,
-22366,Saboteur,
-475,Scarlet Crusader,
-12240,Scarlet Purifier,Paladin
-7730,Shade of Naxxramas,
-22356,Shadowfiend,Priest
-22348,Shady Dealer,Rogue
-434,Shattered Sun Cleric,
-286,SI:7 Agent,Rogue
-22297,Silent Knight,
-22275,Silver Hand Regent,
-611,Silverback Patriarch,
-12306,Soot Spewer,Mage
-324,Southsea Captain,
-22299,Spellslinger,Mage
-12184,Spider Tank,
-22365,Stablemaster,Hunter
-7750,Stoneskin Gargoyle,
-477,Tauren Warrior,
-265,Thrallmar Farseer,
-12202,Tinkertown Technician,
-245,Tinkmaster Overspark,
-22270,Tuskarr Totemic,Shaman
-51,Unbound Elemental,Shaman
-119,Void Terror,Warlock
-22330,Warhorse Trainer,Paladin
-193,Warsong Commander,Warrior
-174,Wolfrider,
-22316,Argent Lance,Paladin
-632,Fiery War Axe,Warrior
-12267,Glaivezooka,Hunter
-152,Stormforged Axe,Shaman
-22319,Ancestral Knowledge,Shaman
-526,Ancestral Spirit,Shaman
-56,Arcane Explosion,Mage
-664,Battle Rage,Warrior
-22364,Bear Trap,Hunter
-198,Betrayal,Rogue
-244,Blade Flurry,Rogue
-22320,Bolster,Warrior
-12224,Call Pet,Hunter
-81,Cleave,Warrior
-166,Commanding Shout,Warrior
-22327,Confuse,Priest
-22379,Convert,Priest
-12241,Crackle,Shaman
-12299,Darkbomb,Warlock
-452,Demonfire,Warlock
-22300,Demonfuse,Warlock
-554,Divine Spirit,Priest
-383,Equality,Paladin
-382,Eviscerate,Rogue
-27209,Explorer's Hat,Hunter
-344,Explosive Trap,Hunter
-12238,Feign Death,Hunter
-12192,Flamecannon,Mage
-630,Flare,Hunter
-99,Freezing Trap,Hunter
-177,Frostbolt,Mage
-14462,Gang Up,Rogue
-1,Heroic Strike,Warrior
-108,Holy Light,Paladin
-14440,Lava Shock,Shaman
-22258,Lock and Load,Hunter
-480,Mark of the Wild,Druid
-415,Mind Blast,Priest
-447,Misdirection,Hunter
-165,Power of the Wild,Druid
-14459,Quick Shot,Hunter
-454,Rampage,Warrior
-7731,Reincarnate,Shaman
-14461,Resurrect,Priest
-14464,Revenge,Warrior
-385,Sap,Rogue
-12305,Seal of Light,Paladin
-315,Shadow Word: Pain,Priest
-164,Shiv,Rogue
-215,Slam,Warrior
-210,Snake Trap,Hunter
-553,Snipe,Hunter
-12178,Unstable Portal,Mage
-282,Wild Growth,Druid
-146,Windfury,Shaman
-633,Wrath,Druid
-74,Acidic Swamp Ooze,
-22333,Alexstrasza's Champion,Warrior
-641,Amani Berserker,
-153,Ancient Watcher,
-12181,Annoy-o-Tron,
-12219,Anodized Robo Cub,Druid
-191,Argent Protector,Paladin
-22298,Argent Watchman,
-644,Armorsmith,Warrior
-576,Bloodfen Raptor,
-525,Bloodmage Thalnos,
-637,Bloodsail Raider,
-289,Bluegill Warrior,
-22352,Boneguard Lieutenant,
-559,Captain's Parrot,
-612,Crazed Alchemist,
-328,Cruel Taskmaster,Warrior
-22336,Cutpurse,Rogue
-27243,Dark Peddler,Warlock
-22303,Darnassus Aspirant,Druid
-417,Defias Ringleader,Rogue
-305,Dire Wolf Alpha,
-467,Doomsayer,
-22307,Druid of the Saber,Druid
-7754,Echoing Ooze,
-12180,Explosive Sheep,
-213,Faerie Dragon,
-22268,Fallen Hero,Mage
-22292,Flame Juggler,
-390,Flametongue Totem,Shaman
-663,Frostwolf Grunt,
-22274,Garrison Commander,
-12249,Gilblin Stalker,
-12212,Goblin Auto-Barber,Rogue
-7756,Haunted Creeper,
-500,Ironbeak Owl,
-27211,Jeweled Scarab,
-22370,King's Elekk,Hunter
-422,Knife Juggler,
-479,Kobold Geomancer,
-22335,Lance Carrier,
-117,Lightwell,Priest
-395,Loot Hoarder,
-456,Lorewalker Cho,
-80,Mad Bomber,
-7748,Mad Scientist,
-67,Mana Addict,
-197,Mana Wraith,
-584,Master Swordsmith,
-12188,Mechwarper,
-12189,Micro Machine,
-339,Millhouse Manastorm,
-12283,Mistress of Pain,Warlock
-357,Murloc Tidehunter,
-19,Nat Pagle,
-7755,Nerub'ar Weblord,
-7738,Nerubian Egg,
-435,Novice Engineer,
-12255,One-eyed Cheat,Rogue
-14,Patient Assassin,Rogue
-54,Pint-Sized Summoner,
-12274,Puddlestomper,
-12198,Recombobulator,
-535,River Crocolisk,
-279,Scavenging Hyena,Hunter
-12256,Shadowboxer,Priest
-12257,Shielded Minibot,Paladin
-12258,Ship's Cannon,
-12197,Shrinkmeister,Priest
-12230,Snowchugger,Mage
-4,Sorcerer's Apprentice,Mage
-22354,Sparring Partner,Warrior
-12242,Steamwheedle Sniper,Hunter
-12266,Stonesplinter Trogg,
-208,Succubus,Warlock
-372,Sunfury Protector,
-22386,Tiny Knight of Evil,Warlock
-22265,Totem Golem,Shaman
-22371,Undercity Valiant,Rogue
-7757,Unstable Ghoul,
-12259,Vitality Totem,Shaman
-12231,Whirling Zap-o-matic,Shaman
-25,Wild Pyromancer,
-22304,Wrathguard,Warlock
-22398,Wyrmrest Agent,Priest
-247,Youthful Brewmaster,
-250,Light's Justice,Paladin
-22358,Arcane Blast,Mage
-589,Arcane Missiles,Mage
-167,Arcane Shot,Hunter
-7729,Avenge,Paladin
-304,Bestial Wrath,Hunter
-394,Blessing of Might,Paladin
-100,Blessing of Wisdom,Paladin
-532,Claw,Druid
-92,Cold Blood,Rogue
-22363,Competitive Spirit,Paladin
-284,Conceal,Rogue
-252,Corruption,Warlock
-87,Deadly Poison,Rogue
-77,Earth Shock,Shaman
-227,Execute,Warrior
-206,Eye for an Eye,Paladin
-22328,Flash Heal,Priest
-530,Forked Lightning,Shaman
-233,Frost Shock,Shaman
-499,Hand of Protection,Paladin
-409,Holy Smite,Priest
-189,Humility,Paladin
-188,Ice Lance,Mage
-207,Inner Fire,Priest
-12297,Light of the Naaru,Priest
-10,Lightning Bolt,Shaman
-22329,Living Roots,Druid
-438,Mind Vision,Priest
-30,Mirror Image,Mage
-43,Mortal Coil,Warlock
-154,Naturalize,Druid
-158,Noble Sacrifice,Paladin
-170,Power Overwhelming,Warlock
-22385,Power Word: Glory,Priest
-431,Power Word: Shield,Priest
-657,Redemption,Paladin
-642,Repentance,Paladin
-491,Rockbiter Weapon,Shaman
-27217,Sacred Trial,Paladin
-148,Savagery,Druid
-50,Shield Slam,Warrior
-205,Sinister Strike,Rogue
-529,Soulfire,Warlock
-163,Tracking,Hunter
-638,Upgrade!,Warrior
-161,Whirlwind,Warrior
-577,Abusive Sergeant,
-57,Angry Chicken,
-473,Argent Squire,
-196,Blood Imp,Warlock
-453,Bloodsail Corsair,
-22310,Brave Archer,Hunter
-22347,Buccaneer,Rogue
-12200,Clockwork Gnome,
-12179,Cogmaster,
-14442,Dragon Egg,
-129,Dust Devil,Shaman
-356,Elven Archer,
-85,Flame Imp,Warlock
-22311,Gadgetzan Jouster,
-564,Goldshire Footman,
-510,Grimscale Oracle,
-660,Hungry Crab,
-22322,Injured Kvaldir,
-513,Leper Gnome,
-436,Lightwarden,
-22263,Lowly Squire,
-263,Mana Wyrm,Mage
-55,Murloc Raider,
-420,Murloc Tidecaller,
-600,Northshire Cleric,Priest
-483,Secretkeeper,
-12278,Shadowbomber,Priest
-24,Shieldbearer,
-103,Southsea Deckhand,
-76,Stonetusk Boar,
-86,Timber Wolf,Hunter
-22350,Tournament Attendee,
-14460,Twilight Whelp,Priest
-7737,Undertaker,
-340,Voidwalker,Warlock
-410,Voodoo Doctor,
-12260,Warbot,Warrior
-7741,Webspinner,Hunter
-112,Worgen Infiltrator,
-629,Young Dragonhawk,
-123,Young Priestess,
-683,Zombie Chow,
-216,Ancestral Healing,Shaman
-471,Backstab,Rogue
-38,Circle of Healing,Priest
-22,Hunter's Mark,Hunter
-366,Inner Rage,Warrior
-548,Innervate,Druid
-619,Moonfire,Druid
-364,Preparation,Rogue
-348,Sacrificial Pact,Warlock
-550,Shadowstep,Rogue
-544,Silence,Priest
-367,Totemic Might,Shaman
-12288,Target Dummy,
-273,Wisp,
-14694,Alleria Windrunner,Hunter
-110,Anduin Wrynn,Priest
-635,Garrosh Hellscream,Warrior
-618,Gul'dan,Warlock
-320,Jaina Proudmoore,Mage
-14693,Magni Bronzebeard,Warrior
-621,Malfurion Stormrage,Druid
-14695,Medivh,Mage
-484,Rexxar,Hunter
-319,Thrall,Shaman
-257,Uther Lightbringer,Paladin
-2,Valeera Sanguinar,Rogue
+Molten Giant,94,,20
+Clockwork Giant,12201,,12
+Mountain Giant,264,,12
+Mind Control,401,Priest,10
+Pyroblast,496,Mage,10
+Deathwing,474,,10
+Frost Giant,22262,,10
+Sea Giant,614,,10
+Varian Wrynn,22342,Warrior,10
+Tree of Life,12270,Druid,9
+Alexstrasza,303,,9
+Anub'arak,22324,Rogue,9
+Aviana,22325,Druid,9
+Cenarius,605,Druid,9
+Icehowl,22338,,9
+King Krush,194,Hunter,9
+Lord Jaraxxus,482,Warlock,9
+Majordomo Executus,14456,,9
+Mal'Ganis,12294,Warlock,9
+Malygos,241,,9
+Mekgineer Thermaplugg,12196,,9
+Nefarian,14448,,9
+North Sea Kraken,22289,,9
+Nozdormu,285,,9
+Onyxia,432,,9
+Volcanic Lumberer,14458,Druid,9
+Ysera,495,,9
+Lay on Hands,506,Paladin,8
+Twisting Nether,398,Warlock,8
+Al'Akir the Windlord,335,Shaman,8
+Chromaggus,14451,,8
+Foe Reaper 4000,12217,,8
+Force-Tank MAX,12248,,8
+Grommash Hellscream,643,Warrior,8
+Gruul,18,,8
+Ironbark Protector,238,Druid,8
+Kel'Thuzad,7742,,8
+Ragnaros the Firelord,503,,8
+Rhonin,22343,Mage,8
+Sneed's Old Shredder,12187,,8
+Tirion Fordring,391,Paladin,8
+Gladiator's Longbow,278,Hunter,7
+Gorehowl,96,Warrior,7
+Crush,12303,Warrior,7
+Flamestrike,44,Mage,7
+Sprint,90,Rogue,7
+Acidmaw,22393,Hunter,7
+Ancient of Lore,34,Druid,7
+Ancient of War,242,Druid,7
+Archmage Antonidas,220,Mage,7
+Baron Geddon,539,,7
+Captured Jormungar,22377,,7
+Chillmaw,22353,,7
+Confessor Paletress,22368,Priest,7
+Core Hound,173,,7
+Dr. Boom,12182,,7
+Eadric the Pure,22313,Paladin,7
+Fearsome Doomguard,22391,Warlock,7
+Flame Leviathan,12290,Mage,7
+Gahz'rilla,12232,Hunter,7
+Guardian of Kings,283,Paladin,7
+Knight of the Wild,22360,Druid,7
+Malorne,12293,Druid,7
+Neptulon,12292,Shaman,7
+Obsidian Destroyer,27222,Warrior,7
+Prophet Velen,228,Priest,7
+Ravenholdt Assassin,518,,7
+Rend Blackhand,14438,,7
+Skycap'n Kragg,22260,,7
+Stormwind Champion,310,,7
+Troggzor the Earthinator,12272,,7
+War Golem,323,,7
+Avenging Wrath,142,Paladin,6
+Ball of Spiders,22272,Hunter,6
+Blizzard,276,Mage,6
+Dark Bargain,22388,Warlock,6
+Dark Wispers,12298,Druid,6
+Enter the Coliseum,22380,Paladin,6
+Force of Nature,237,Druid,6
+Holy Fire,457,Priest,6
+Lightbomb,12301,Priest,6
+Recycle,12279,Druid,6
+Siphon Soul,573,Warlock,6
+Starfire,667,Druid,6
+Vanish,658,Rogue,6
+Anima Golem,12245,Warlock,6
+Archmage,545,,6
+Argent Commander,463,,6
+Bolf Ramshield,22346,,6
+Boulderfist Ogre,60,,6
+Cabal Shadow Priest,147,Priest,6
+Cairne Bloodhoof,498,,6
+Coldarra Drake,22261,Mage,6
+Drakonid Crusher,14449,,6
+Dread Infernal,36,Warlock,6
+Emperor Thaurissan,14454,,6
+Fire Elemental,636,Shaman,6
+Frost Elemental,598,,6
+Gadgetzan Auctioneer,131,,6
+Gazlowe,12287,,6
+Molten Giant,94,,20
+Clockwork Giant,12201,,12
+Mountain Giant,264,,12
+Mind Control,401,Priest,10
+Pyroblast,496,Mage,10
+Deathwing,474,,10
+Frost Giant,22262,,10
+Sea Giant,614,,10
+Varian Wrynn,22342,Warrior,10
+Tree of Life,12270,Druid,9
+Alexstrasza,303,,9
+Anub'arak,22324,Rogue,9
+Aviana,22325,Druid,9
+Cenarius,605,Druid,9
+Icehowl,22338,,9
+King Krush,194,Hunter,9
+Lord Jaraxxus,482,Warlock,9
+Majordomo Executus,14456,,9
+Mal'Ganis,12294,Warlock,9
+Malygos,241,,9
+Mekgineer Thermaplugg,12196,,9
+Nefarian,14448,,9
+North Sea Kraken,22289,,9
+Nozdormu,285,,9
+Onyxia,432,,9
+Volcanic Lumberer,14458,Druid,9
+Ysera,495,,9
+Lay on Hands,506,Paladin,8
+Twisting Nether,398,Warlock,8
+Al'Akir the Windlord,335,Shaman,8
+Chromaggus,14451,,8
+Foe Reaper 4000,12217,,8
+Force-Tank MAX,12248,,8
+Grommash Hellscream,643,Warrior,8
+Gruul,18,,8
+Ironbark Protector,238,Druid,8
+Kel'Thuzad,7742,,8
+Ragnaros the Firelord,503,,8
+Rhonin,22343,Mage,8
+Sneed's Old Shredder,12187,,8
+Tirion Fordring,391,Paladin,8
+Gladiator's Longbow,278,Hunter,7
+Gorehowl,96,Warrior,7
+Crush,12303,Warrior,7
+Flamestrike,44,Mage,7
+Sprint,90,Rogue,7
+Acidmaw,22393,Hunter,7
+Ancient of Lore,34,Druid,7
+Ancient of War,242,Druid,7
+Archmage Antonidas,220,Mage,7
+Baron Geddon,539,,7
+Captured Jormungar,22377,,7
+Chillmaw,22353,,7
+Confessor Paletress,22368,Priest,7
+Core Hound,173,,7
+Dr. Boom,12182,,7
+Eadric the Pure,22313,Paladin,7
+Fearsome Doomguard,22391,Warlock,7
+Flame Leviathan,12290,Mage,7
+Gahz'rilla,12232,Hunter,7
+Guardian of Kings,283,Paladin,7
+Knight of the Wild,22360,Druid,7
+Malorne,12293,Druid,7
+Neptulon,12292,Shaman,7
+Obsidian Destroyer,27222,Warrior,7
+Prophet Velen,228,Priest,7
+Ravenholdt Assassin,518,,7
+Rend Blackhand,14438,,7
+Skycap'n Kragg,22260,,7
+Stormwind Champion,310,,7
+Troggzor the Earthinator,12272,,7
+War Golem,323,,7
+Avenging Wrath,142,Paladin,6
+Ball of Spiders,22272,Hunter,6
+Blizzard,276,Mage,6
+Dark Bargain,22388,Warlock,6
+Dark Wispers,12298,Druid,6
+Enter the Coliseum,22380,Paladin,6
+Force of Nature,237,Druid,6
+Holy Fire,457,Priest,6
+Lightbomb,12301,Priest,6
+Recycle,12279,Druid,6
+Siphon Soul,573,Warlock,6
+Starfire,667,Druid,6
+Vanish,658,Rogue,6
+Anima Golem,12245,Warlock,6
+Archmage,545,,6
+Argent Commander,463,,6
+Bolf Ramshield,22346,,6
+Boulderfist Ogre,60,,6
+Cabal Shadow Priest,147,Priest,6
+Cairne Bloodhoof,498,,6
+Coldarra Drake,22261,Mage,6
+Drakonid Crusher,14449,,6
+Dread Infernal,36,Warlock,6
+Emperor Thaurissan,14454,,6
+Fire Elemental,636,Shaman,6
+Frost Elemental,598,,6
+Gadgetzan Auctioneer,131,,6
+Gazlowe,12287,,6
+Gelbin Mekkatorque,251,,6
+Grand Crusader,22326,,6
+Hogger,39,,6
+Illidan Stormrage,203,,6
+Iron Juggernaut,12295,Warrior,6
+Justicar Trueheart,22276,,6
+Kidnapper,562,Rogue,6
+Kodorider,22266,,6
+Lord of the Arena,414,,6
+Maexxna,7747,,6
+Master Jouster,22317,,6
+Mech-Bear-Cat,12226,Druid,6
+Mogor the Ogre,12282,,6
+Mogor's Champion,22382,,6
+Mysterious Challenger,22394,Paladin,6
+Piloted Sky Golem,12175,,6
+Priestess of Elune,138,,6
+Reckless Rocketeer,560,,6
+Reno Jackson,27228,,6
+Savannah Highmane,8,Hunter,6
+Sea Reaver,22339,Warrior,6
+Shieldmaiden,12215,Warrior,6
+Sideshow Spelleater,22372,,6
+Sunwalker,221,,6
+Sylvanas Windrunner,33,,6
+Temple Enforcer,232,Priest,6
+The Beast,179,,6
+The Black Knight,396,,6
+The Mistcaller,22349,Shaman,6
+The Skeleton Knight,22314,,6
+Toshley,12225,,6
+Trade Prince Gallywix,12291,Rogue,6
+Void Crusher,22387,Warlock,6
+Volcanic Drake,14450,,6
+Wilfred Fizzlebang,22288,Warlock,6
+Windfury Harpy,675,,6
+Arcanite Reaper,182,Warrior,5
+Assassin's Blade,433,Rogue,5
+Doomhammer,172,Shaman,5
+Assassinate,568,Rogue,5
+Bane of Doom,670,Warlock,5
+Blessed Champion,7,Paladin,5
+Bloodlust,256,Shaman,5
+Brawl,297,Warrior,5
+Cobra Shot,12304,Hunter,5
+Demonheart,12237,Warlock,5
+Dragon's Breath,14446,Mage,5
+Explosive Shot,114,Hunter,5
+Flame Lance,22302,Mage,5
+Holy Nova,671,Priest,5
+Holy Wrath,355,Paladin,5
+Nourish,120,Druid,5
+Solemn Vigil,14453,Paladin,5
+Starfall,464,Druid,5
+Abomination,597,,5
+Antique Healbot,12227,,5
+Anubisath Sentinel,27241,,5
+Azure Drake,280,,5
+Blackwing Corruptor,14447,,5
+Blingtron 3000,12183,,5
+Bolvar Fordragon,12244,Paladin,5
+Bomb Lobber,12193,,5
+Booty Bay Bodyguard,27,,5
+Captain Greenskin,267,,5
+Clockwork Knight,22294,,5
+Cobalt Guardian,12222,Paladin,5
+Dark Iron Skulker,14434,Rogue,5
+Darkscale Healer,84,,5
+Djinni of Zephyrs,27234,,5
+Doomguard,507,Warlock,5
+Dragon Consort,14452,Paladin,5
+Druid of the Claw,587,Druid,5
+Druid of the Fang,12243,Druid,5
+Earth Elemental,124,Shaman,5
+Elite Tauren Chieftain,682,,5
+Faceless Manipulator,450,,5
+Fel Reaver,12264,,5
+Fen Creeper,476,,5
+Feugen,7745,,5
+Floating Watcher,12271,Warlock,5
+Frostwolf Warlord,604,,5
+Grim Patron,14435,,5
+Gurubashi Berserker,624,,5
+Harrison Jones,602,,5
+Hemet Nesingwary,12268,,5
+Junkbot,12251,,5
+King of Beasts,12285,Hunter,5
+Kvaldir Raider,22355,,5
+Leeroy Jenkins,674,,5
+Loatheb,7746,,5
+Madder Bomber,12177,,5
+Mimiron's Head,12190,,5
+Mukla's Champion,22318,,5
+Nexus-Champion Saraad,22264,,5
+Nightblade,184,,5
+Ogre Ninja,12235,Rogue,5
+Pit Fighter,22375,,5
+Quartermaster,12280,Paladin,5
+Ram Wrangler,22344,Hunter,5
+Recruiter,22367,,5
+Salty Dog,12263,,5
+Shado-Pan Rider,22305,Rogue,5
+Siege Engine,12275,Warrior,5
+Silver Hand Knight,648,,5
+Sludge Belcher,7749,,5
+Spectral Knight,7751,,5
+Spiteful Smith,627,,5
+Stalagg,7744,,5
+Stampeding Kodo,389,,5
+Starving Buzzard,101,Hunter,5
+Stormpike Commando,325,,5
+Stranglethorn Tiger,338,,5
+Summoning Stone,27239,,5
+Thunder Bluff Valiant,22271,Shaman,5
+Tundra Rhino,162,Hunter,5
+Tuskarr Jouster,22315,Paladin,5
+Upgraded Repair Bot,12185,Priest,5
+Venture Co. Mercenary,509,,5
+Vol'jin,12296,Priest,5
+Charged Hammer,22331,Shaman,4
+Death's Bite,7734,Warrior,4
+Poisoned Blade,22273,Rogue,4
+Truesilver Champion,293,Paladin,4
+Ancestor's Call,12218,Shaman,4
+Astral Communion,22334,Druid,4
+Bite,266,Druid,4
+Blessing of Kings,29,Paladin,4
+Cone of Cold,26,Mage,4
+Consecration,260,Paladin,4
+Echo of Medivh,12300,Mage,4
+Fireball,522,Mage,4
+Fist of Jaraxxus,22332,Warlock,4
+Hammer of Wrath,350,Paladin,4
+Hellfire,122,Warlock,4
+Imp-losion,12302,Warlock,4
+Mass Dispel,249,Priest,4
+Mindgames,301,Priest,4
+Mortal Strike,345,Warrior,4
+Multi-Shot,407,Hunter,4
+Poison Seeds,7726,Druid,4
+Polymorph,595,Mage,4
+Sabotage,12236,Rogue,4
+Shadow Madness,442,Priest,4
+Shadowflame,673,Warlock,4
+Soul of the Forest,311,Druid,4
+Swipe,620,Druid,4
+Tinker's Sharpsword Oil,12276,Rogue,4
+Ancient Brewmaster,572,,4
+Ancient Mage,176,,4
+Ancient Shade,27245,,4
+Anub'ar Ambusher,7728,Rogue,4
+Arathi Weaponsmith,504,Warrior,4
+Arcane Nullifier X-21,12246,,4
+Armored Warhorse,22312,,4
+Auchenai Soulpriest,656,Priest,4
+Axe Flinger,14439,Warrior,4
+Baron Rivendare,7740,,4
+Burly Rockjaw Trogg,12233,,4
+Chillwind Yeti,31,,4
+Core Rager,14444,Hunter,4
+Crowd Favorite,22308,,4
+Cult Master,140,,4
+Dalaran Aspirant,22359,Mage,4
+Dark Iron Dwarf,128,,4
+Defender of Argus,542,,4
+Draenei Totemcarver,22269,Shaman,4
+Dragonkin Sorcerer,14441,,4
+Dragonling Mechanic,472,,4
+Dread Corsair,261,,4
+Dreadsteed,22337,Warlock,4
+Dunemaul Shaman,12234,Shaman,4
+Enhance-o Mechano,12176,,4
+Ethereal Arcanist,125,Mage,4
+Evil Heckler,22390,,4
+Fel Cannon,12221,Warlock,4
+Fireguard Destroyer,14455,Shaman,4
+Frigid Snobold,22381,,4
+Gnomish Inventor,246,,4
+Goblin Blastmage,12195,Mage,4
+Gormok the Impaler,22323,,4
+Holy Champion,22287,Priest,4
+Houndmaster,225,Hunter,4
+Hungry Dragon,14436,,4
+Jeeves,12216,,4
+Keeper of the Grove,459,Druid,4
+Kezan Mystic,12252,,4
+Kor'kron Elite,130,Warrior,4
+Lightspawn,192,Priest,4
+Lost Tallstrider,12284,,4
+Magnataur Alpha,22376,Warrior,4
+Maiden of the Lake,22259,,4
+Master of Disguise,127,Rogue,4
+Mechanical Yeti,12253,,4
+Mini-Mage,12262,,4
+Mogu'shan Warden,346,,4
+Murloc Knight,22362,Paladin,4
+Oasis Snapjaw,15,,4
+Ogre Magi,659,,4
+Old Murk-Eye,217,,4
+Piloted Shredder,12191,,4
+Pit Lord,402,Warlock,4
+Refreshment Vendor,22374,,4
+Rumbling Elemental,27244,Shaman,4
+Savage Combatant,22293,Druid,4
+Screwjank Clunker,12220,Warrior,4
+Sen'jin Shieldmasta,326,,4
+Siltfin Spiritwalker,12277,Shaman,4
+Silvermoon Guardian,634,,4
+Spawn of Shadows,22357,Priest,4
+Spellbreaker,42,,4
+Stormwind Knight,603,,4
+Summoning Portal,566,Warlock,4
+Tournament Medic,22290,,4
+Twilight Drake,360,,4
+Twilight Guardian,22351,,4
+Violet Teacher,523,,4
+Voidcaller,7733,Warlock,4
+Wailing Soul,7758,,4
+Water Elemental,274,Mage,4
+Wee Spellstopper,12261,Mage,4
+Wildwalker,22361,Druid,4
+Windspeaker,151,Shaman,4
+Coghammer,12228,Paladin,3
+Cogmaster's Wrench,12265,Rogue,3
+Eaglehorn Bow,363,Hunter,3
+King's Defender,22286,Warrior,3
+Ogre Warmaul,12211,Warrior,3
+Perdition's Blade,82,Rogue,3
+Powermace,12269,Shaman,3
+Sword of Justice,567,Paladin,3
+Animal Companion,578,Hunter,3
+Arcane Intellect,489,Mage,3
+Bash,22309,Warrior,3
+Beneath the Grounds,22397,Rogue,3
+Bouncing Blade,12203,Warrior,3
+Burgle,22321,Rogue,3
+Charge,646,Warrior,3
+Counterspell,531,Mage,3
+Deadly Shot,239,Hunter,3
+Demonwrath,14463,Warlock,3
+Divine Favor,581,Paladin,3
+Drain Life,332,Warlock,3
+Duplicate,7732,Mage,3
+Effigy,22267,Mage,3
+Elemental Destruction,22345,Shaman,3
+Fan of Knives,378,Rogue,3
+Far Sight,107,Shaman,3
+Feral Spirit,214,Shaman,3
+Forgotten Torch,27216,Mage,3
+Frost Nova,49,Mage,3
+Headcrack,135,Rogue,3
+Healing Touch,258,Druid,3
+Healing Wave,22340,Shaman,3
+Hex,270,Shaman,3
+Ice Barrier,672,Mage,3
+Ice Block,28,Mage,3
+Kill Command,488,Hunter,3
+Lava Burst,679,Shaman,3
+Lightning Storm,676,Shaman,3
+Mark of Nature,149,Druid,3
+Mirror Entity,569,Mage,3
+Mulch,22383,Druid,3
+Muster for Battle,12223,Paladin,3
+Polymorph: Boar,22396,Mage,3
+Powershot,22384,Hunter,3
+Savage Roar,329,Druid,3
+Seal of Champions,22373,Paladin,3
+Sense Demons,327,Warlock,3
+Shadow Bolt,647,Warlock,3
+Shadow Word: Death,547,Priest,3
+Shadowform,421,Priest,3
+Shield Block,493,Warrior,3
+Spellbender,309,Mage,3
+Thoughtsteal,62,Priest,3
+Unleash the Hounds,317,Hunter,3
+Vaporize,160,Mage,3
+Velen's Chosen,12174,Priest,3
+Acolyte of Pain,428,,3
+Alarm-o-Bot,425,,3
+Aldor Peacekeeper,23,Paladin,3
+Arcane Golem,97,,3
+Argent Horserider,22301,,3
+Big Game Hunter,73,,3
+Blackwing Technician,14437,,3
+Blood Knight,75,,3
+Coldlight Oracle,88,,3
+Coldlight Seer,424,,3
+Coliseum Manager,22291,,3
+Dalaran Mage,388,,3
+Dancing Swords,7736,,3
+Dark Cultist,7735,Priest,3
+Deathlord,7753,,3
+Demolisher,212,,3
+Dragonhawk Rider,22369,,3
+Dreadscale,22389,Hunter,3
+Druid of the Flame,14457,Druid,3
+Earthen Ring Farseer,557,,3
+Edwin VanCleef,3,Rogue,3
+Emperor Cobra,625,,3
+Eydis Darkbane,22295,,3
+Felguard,236,Warlock,3
+Fencing Coach,22378,,3
+Fjola Lightbane,22296,,3
+Flamewaker,14445,Mage,3
+Flesheating Ghoul,610,,3
+Flying Machine,12247,,3
+Frothing Berserker,69,Warrior,3
+Gnomeregan Infantry,12286,,3
+Gnomish Experimenter,12199,,3
+Goblin Sapper,12213,,3
+Grove Tender,12273,Druid,3
+Harvest Golem,386,,3
+Hobgoblin,12250,,3
+Ice Rager,22392,,3
+Illuminator,12214,,3
+Imp Gang Boss,14443,Warlock,3
+Imp Master,178,,3
+Injured Blademaster,209,,3
+Iron Sensei,12229,Rogue,3
+Ironforge Rifleman,41,,3
+Ironfur Grizzly,519,,3
+Jungle Panther,392,,3
+King Mukla,373,,3
+Kirin Tor Mage,411,Mage,3
+Light's Champion,22341,,3
+Lil' Exorcist,12239,,3
+Magma Rager,362,,3
+Mana Tide Totem,613,Shaman,3
+Master of Ceremonies,22306,,3
+Metaltooth Leaper,12254,Hunter,3
+Mind Control Tech,368,,3
+Murloc Warleader,222,,3
+Ogre Brute,12281,,3
+Orgrimmar Aspirant,22395,Warrior,3
+Questing Adventurer,157,,3
+Raging Worgen,95,,3
+Raid Leader,502,,3
+Razorfen Hunter,47,,3
+Saboteur,22366,,3
+Scarlet Crusader,475,,3
+Scarlet Purifier,12240,Paladin,3
+Shade of Naxxramas,7730,,3
+Shadowfiend,22356,Priest,3
+Shady Dealer,22348,Rogue,3
+Shattered Sun Cleric,434,,3
+SI:7 Agent,286,Rogue,3
+Silent Knight,22297,,3
+Silver Hand Regent,22275,,3
+Silverback Patriarch,611,,3
+Soot Spewer,12306,Mage,3
+Southsea Captain,324,,3
+Spellslinger,22299,Mage,3
+Spider Tank,12184,,3
+Stablemaster,22365,Hunter,3
+Stoneskin Gargoyle,7750,,3
+Tauren Warrior,477,,3
+Thrallmar Farseer,265,,3
+Tinkertown Technician,12202,,3
+Tinkmaster Overspark,245,,3
+Tuskarr Totemic,22270,Shaman,3
+Unbound Elemental,51,Shaman,3
+Void Terror,119,Warlock,3
+Warhorse Trainer,22330,Paladin,3
+Warsong Commander,193,Warrior,3
+Wolfrider,174,,3
+Argent Lance,22316,Paladin,2
+Fiery War Axe,632,Warrior,2
+Glaivezooka,12267,Hunter,2
+Stormforged Axe,152,Shaman,2
+Ancestral Knowledge,22319,Shaman,2
+Ancestral Spirit,526,Shaman,2
+Arcane Explosion,56,Mage,2
+Battle Rage,664,Warrior,2
+Bear Trap,22364,Hunter,2
+Betrayal,198,Rogue,2
+Blade Flurry,244,Rogue,2
+Bolster,22320,Warrior,2
+Call Pet,12224,Hunter,2
+Cleave,81,Warrior,2
+Commanding Shout,166,Warrior,2
+Confuse,22327,Priest,2
+Convert,22379,Priest,2
+Crackle,12241,Shaman,2
+Darkbomb,12299,Warlock,2
+Demonfire,452,Warlock,2
+Demonfuse,22300,Warlock,2
+Divine Spirit,554,Priest,2
+Equality,383,Paladin,2
+Eviscerate,382,Rogue,2
+Explorer's Hat,27209,Hunter,2
+Explosive Trap,344,Hunter,2
+Feign Death,12238,Hunter,2
+Flamecannon,12192,Mage,2
+Flare,630,Hunter,2
+Freezing Trap,99,Hunter,2
+Frostbolt,177,Mage,2
+Gang Up,14462,Rogue,2
+Heroic Strike,1,Warrior,2
+Holy Light,108,Paladin,2
+Lava Shock,14440,Shaman,2
+Lock and Load,22258,Hunter,2
+Mark of the Wild,480,Druid,2
+Mind Blast,415,Priest,2
+Misdirection,447,Hunter,2
+Power of the Wild,165,Druid,2
+Quick Shot,14459,Hunter,2
+Rampage,454,Warrior,2
+Reincarnate,7731,Shaman,2
+Resurrect,14461,Priest,2
+Revenge,14464,Warrior,2
+Sap,385,Rogue,2
+Seal of Light,12305,Paladin,2
+Shadow Word: Pain,315,Priest,2
+Shiv,164,Rogue,2
+Slam,215,Warrior,2
+Snake Trap,210,Hunter,2
+Snipe,553,Hunter,2
+Unstable Portal,12178,Mage,2
+Wild Growth,282,Druid,2
+Windfury,146,Shaman,2
+Wrath,633,Druid,2
+Acidic Swamp Ooze,74,,2
+Alexstrasza's Champion,22333,Warrior,2
+Amani Berserker,641,,2
+Ancient Watcher,153,,2
+Annoy-o-Tron,12181,,2
+Anodized Robo Cub,12219,Druid,2
+Argent Protector,191,Paladin,2
+Argent Watchman,22298,,2
+Armorsmith,644,Warrior,2
+Bloodfen Raptor,576,,2
+Bloodmage Thalnos,525,,2
+Bloodsail Raider,637,,2
+Bluegill Warrior,289,,2
+Boneguard Lieutenant,22352,,2
+Captain's Parrot,559,,2
+Crazed Alchemist,612,,2
+Cruel Taskmaster,328,Warrior,2
+Cutpurse,22336,Rogue,2
+Dark Peddler,27243,Warlock,2
+Darnassus Aspirant,22303,Druid,2
+Defias Ringleader,417,Rogue,2
+Dire Wolf Alpha,305,,2
+Doomsayer,467,,2
+Druid of the Saber,22307,Druid,2
+Echoing Ooze,7754,,2
+Explosive Sheep,12180,,2
+Faerie Dragon,213,,2
+Fallen Hero,22268,Mage,2
+Flame Juggler,22292,,2
+Flametongue Totem,390,Shaman,2
+Frostwolf Grunt,663,,2
+Garrison Commander,22274,,2
+Gilblin Stalker,12249,,2
+Goblin Auto-Barber,12212,Rogue,2
+Haunted Creeper,7756,,2
+Ironbeak Owl,500,,2
+Jeweled Scarab,27211,,2
+King's Elekk,22370,Hunter,2
+Knife Juggler,422,,2
+Kobold Geomancer,479,,2
+Lance Carrier,22335,,2
+Lightwell,117,Priest,2
+Loot Hoarder,395,,2
+Lorewalker Cho,456,,2
+Mad Bomber,80,,2
+Mad Scientist,7748,,2
+Mana Addict,67,,2
+Mana Wraith,197,,2
+Master Swordsmith,584,,2
+Mechwarper,12188,,2
+Micro Machine,12189,,2
+Millhouse Manastorm,339,,2
+Mistress of Pain,12283,Warlock,2
+Murloc Tidehunter,357,,2
+Nat Pagle,19,,2
+Nerub'ar Weblord,7755,,2
+Nerubian Egg,7738,,2
+Novice Engineer,435,,2
+One-eyed Cheat,12255,Rogue,2
+Patient Assassin,14,Rogue,2
+Pint-Sized Summoner,54,,2
+Puddlestomper,12274,,2
+Recombobulator,12198,,2
+River Crocolisk,535,,2
+Scavenging Hyena,279,Hunter,2
+Shadowboxer,12256,Priest,2
+Shielded Minibot,12257,Paladin,2
+Ship's Cannon,12258,,2
+Shrinkmeister,12197,Priest,2
+Snowchugger,12230,Mage,2
+Sorcerer's Apprentice,4,Mage,2
+Sparring Partner,22354,Warrior,2
+Steamwheedle Sniper,12242,Hunter,2
+Stonesplinter Trogg,12266,,2
+Succubus,208,Warlock,2
+Sunfury Protector,372,,2
+Tiny Knight of Evil,22386,Warlock,2
+Totem Golem,22265,Shaman,2
+Undercity Valiant,22371,Rogue,2
+Unstable Ghoul,7757,,2
+Vitality Totem,12259,Shaman,2
+Whirling Zap-o-matic,12231,Shaman,2
+Wild Pyromancer,25,,2
+Wrathguard,22304,Warlock,2
+Wyrmrest Agent,22398,Priest,2
+Youthful Brewmaster,247,,2
+Light's Justice,250,Paladin,1
+Arcane Blast,22358,Mage,1
+Arcane Missiles,589,Mage,1
+Arcane Shot,167,Hunter,1
+Avenge,7729,Paladin,1
+Bestial Wrath,304,Hunter,1
+Blessing of Might,394,Paladin,1
+Blessing of Wisdom,100,Paladin,1
+Claw,532,Druid,1
+Cold Blood,92,Rogue,1
+Competitive Spirit,22363,Paladin,1
+Conceal,284,Rogue,1
+Corruption,252,Warlock,1
+Deadly Poison,87,Rogue,1
+Earth Shock,77,Shaman,1
+Execute,227,Warrior,1
+Eye for an Eye,206,Paladin,1
+Flash Heal,22328,Priest,1
+Forked Lightning,530,Shaman,1
+Frost Shock,233,Shaman,1
+Hand of Protection,499,Paladin,1
+Holy Smite,409,Priest,1
+Humility,189,Paladin,1
+Ice Lance,188,Mage,1
+Inner Fire,207,Priest,1
+Light of the Naaru,12297,Priest,1
+Lightning Bolt,10,Shaman,1
+Living Roots,22329,Druid,1
+Mind Vision,438,Priest,1
+Mirror Image,30,Mage,1
+Mortal Coil,43,Warlock,1
+Naturalize,154,Druid,1
+Noble Sacrifice,158,Paladin,1
+Power Overwhelming,170,Warlock,1
+Power Word: Glory,22385,Priest,1
+Power Word: Shield,431,Priest,1
+Redemption,657,Paladin,1
+Repentance,642,Paladin,1
+Rockbiter Weapon,491,Shaman,1
+Sacred Trial,27217,Paladin,1
+Savagery,148,Druid,1
+Shield Slam,50,Warrior,1
+Sinister Strike,205,Rogue,1
+Soulfire,529,Warlock,1
+Tracking,163,Hunter,1
+Upgrade!,638,Warrior,1
+Whirlwind,161,Warrior,1
+Abusive Sergeant,577,,1
+Angry Chicken,57,,1
+Argent Squire,473,,1
+Blood Imp,196,Warlock,1
+Bloodsail Corsair,453,,1
+Brave Archer,22310,Hunter,1
+Buccaneer,22347,Rogue,1
+Clockwork Gnome,12200,,1
+Cogmaster,12179,,1
+Dragon Egg,14442,,1
+Dust Devil,129,Shaman,1
+Elven Archer,356,,1
+Flame Imp,85,Warlock,1
+Gadgetzan Jouster,22311,,1
+Goldshire Footman,564,,1
+Grimscale Oracle,510,,1
+Hungry Crab,660,,1
+Injured Kvaldir,22322,,1
+Leper Gnome,513,,1
+Lightwarden,436,,1
+Lowly Squire,22263,,1
+Mana Wyrm,263,Mage,1
+Murloc Raider,55,,1
+Murloc Tidecaller,420,,1
+Northshire Cleric,600,Priest,1
+Secretkeeper,483,,1
+Shadowbomber,12278,Priest,1
+Shieldbearer,24,,1
+Southsea Deckhand,103,,1
+Stonetusk Boar,76,,1
+Timber Wolf,86,Hunter,1
+Tournament Attendee,22350,,1
+Twilight Whelp,14460,Priest,1
+Undertaker,7737,,1
+Voidwalker,340,Warlock,1
+Voodoo Doctor,410,,1
+Warbot,12260,Warrior,1
+Webspinner,7741,Hunter,1
+Worgen Infiltrator,112,,1
+Young Dragonhawk,629,,1
+Young Priestess,123,,1
+Zombie Chow,683,,1
+Ancestral Healing,216,Shaman,0
+Backstab,471,Rogue,0
+Circle of Healing,38,Priest,0
+Hunter's Mark,22,Hunter,0
+Inner Rage,366,Warrior,0
+Innervate,548,Druid,0
+Moonfire,619,Druid,0
+Preparation,364,Rogue,0
+Sacrificial Pact,348,Warlock,0
+Shadowstep,550,Rogue,0
+Silence,544,Priest,0
+Totemic Might,367,Shaman,0
+Target Dummy,12288,,0
+Wisp,273,,0
+Alleria Windrunner,14694,Hunter,0
+Anduin Wrynn,110,Priest,0
+Garrosh Hellscream,635,Warrior,0
+Gul'dan,618,Warlock,0
+Jaina Proudmoore,320,Mage,0
+Magni Bronzebeard,14693,Warrior,0
+Malfurion Stormrage,621,Druid,0
+Medivh,14695,Mage,0
+Rexxar,484,Hunter,0
+Thrall,319,Shaman,0
+Uther Lightbringer,257,Paladin,0
+Valeera Sanguinar,2,Rogue,0

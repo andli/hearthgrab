@@ -35,7 +35,7 @@ for imagePath in glob.glob(os.getcwd() + '/source_cards/*'):
 	resized_img = cv2.resize(gray_img, CARD_SIZE)
 	# ----
 	
-	cv2.imwrite(os.getcwd() + '/cards/' + cardname + '.png', resized_img)
+	cv2.imwrite(os.getcwd() + '/card_templates/' + cardname + '.png', resized_img)
 	counter = counter + 1
 	update_progress(float(counter) / float(total_cards), counter)
 end_time = time.clock()
