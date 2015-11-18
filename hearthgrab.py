@@ -182,10 +182,10 @@ for card in grabbed_cards:
 		last_matched_cost = 0
 	
 	for template in CARD_TEMPLATES:
-		if (template[0].endswith('-g')):
-			card_hearthpwn_id = template[0][:-2]
-		else:
-			card_hearthpwn_id = template[0]
+		# if (template[0].endswith('-g')):
+			# card_hearthpwn_id = template[0][:-2]
+		# else:
+		card_hearthpwn_id = template[0]
 		template_class_name = card_data[card_hearthpwn_id][1]
 		if (template_class_name == ''):
 			template_class_name = 'neutral'
