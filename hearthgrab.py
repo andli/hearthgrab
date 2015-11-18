@@ -35,8 +35,10 @@ def update_progress(progress, counter):
 ### Import csv card data
 card_data = {}
 with open('card_data.csv', 'rb') as f:
-	reader = csv.reader(f)
-	card_data = {rows[1]:[rows[0], rows[2], rows[3]] for rows in reader} # Name, ID, class, cost
+	reader = csv.reader(f, delimiter=',', quotechar='"')
+	for row in reader:
+		if row:
+			card_data = {rows[1]:[rows[0], rows[2], rows[3]] for rows in reader} # Name, ID, class, cost
 
 ### Load all template cards
 print("> Loading all template cards")
@@ -90,7 +92,7 @@ def takeScreenshot():
 	im = ImageGrab.grab()
 	im_numpy = np.array(im)
 	((win_x,win_y),(win_w,win_h)) = window_position[0]
-	crop_img = im_numpy[win_y:win_h, win_x:win_w] #NOTE: its img[y: y + h, x: x + w] 
+	crop_img = im_numpy[win_y:win_h-110, win_x:win_w-450] #NOTE: its img[y: y + h, x: x + w] 
 	gray_window = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
 	return gray_window
 
@@ -100,7 +102,7 @@ print("> Fetching all cards")
 start_time = time.clock()
 grabbed_cards = []
 current_class = None
-
+page_count = 0
 while (True):
 	### Move the cursor so it does not trigger visual effects
 	win32api.SetCursorPos((NEXT_PAGE_CLICK_POINT[0],NEXT_PAGE_CLICK_POINT[1]))
@@ -118,15 +120,17 @@ while (True):
 			break
 	
 	### Find the cards on each page
+	count = 0
 	for card_position in CARD_POSITIONS:
-		card_image = gray_window[card_position[1]:card_position[1]+CARD_SIZE[1],card_position[0]:card_position[0]+CARD_SIZE[0]]
-		
+		#card_image = gray_window[card_position[1]:card_position[1]+CARD_SIZE[1],card_position[0]:card_position[0]+CARD_SIZE[0]]
+		card_image = gray_window[card_position[1]+110:card_position[1]+110+40,card_position[0]:card_position[0]+CARD_SIZE[0]]
+		#cv2.imshow(str(count), card_image)
 		x2_image = gray_window[card_position[1] + CARD_SIZE[1] : card_position[1] + CARD_SIZE[1] + TWOEX_SIZE[1],\
 		card_position[0] + CARD_SIZE[0] / 2 - TWOEX_SIZE[0] : card_position[0] + CARD_SIZE[0] / 2 + TWOEX_SIZE[0]]
-		
+		count += 1
 		#cv2.rectangle(gray_window, (CLASS_POSITION[0], CLASS_POSITION[1]), (CLASS_POSITION[0] + CLASS_SIZE[0], CLASS_POSITION[1] + CLASS_SIZE[1]), (0, 0, 255), 1)
 		grabbed_cards.append([card_image, x2_image, current_class])
-	#cv2.imshow("allcards", gray_window)
+	#cv2.imshow("allcards", card_image)
 	#cv2.waitKey(0)
 	#sys.exit()
 	
@@ -135,6 +139,7 @@ while (True):
 	win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP|win32con.MOUSEEVENTF_ABSOLUTE,0,0)
 	#win32api.ClipCursor((0,0,0,0))
 	time.sleep (PAGE_TURN_TIME);
+	page_count += 1
 	
 	### Check if we are on the last page
 	new_window = takeScreenshot()
@@ -144,7 +149,7 @@ while (True):
 
 end_time = time.clock()
 print("Collected all cards in %.2f seconds." % (end_time - start_time))
-print "Found: " + str(len(grabbed_cards))
+print("Scanned " + str(page_count) + " pages.")
 
 ### Save all found cards
 print("> Saving all found cards")
@@ -171,29 +176,43 @@ for card in grabbed_cards:
 	card_hearthpwn_id = None
 	max_val = 0
 	current_class_name = card[2]
+	template_crop_image = None
+	
 	if (current_class_name != last_matched_class_name):
 		last_matched_cost = 0
 	
 	for template in CARD_TEMPLATES:
-		#if (template[0].endswith('-g'):
-			#
-		template_class_name = card_data[template[0]][1]
+		if (template[0].endswith('-g')):
+			card_hearthpwn_id = template[0][:-2]
+		else:
+			card_hearthpwn_id = template[0]
+		template_class_name = card_data[card_hearthpwn_id][1]
 		if (template_class_name == ''):
 			template_class_name = 'neutral'
-		template_cost = card_data[template[0]][2]
+		template_cost = card_data[card_hearthpwn_id][2]
 		
 		if (template_cost < last_matched_cost):
 			continue
 
 		if (current_class_name == template_class_name.lower()):
-			template_crop = template[1][10:CARD_SIZE[1], 10:CARD_SIZE[0]]
+			template_crop = template[1][118:118+24, 14:14+147]
+			
+				# cv2.imshow(str(card_index), template_crop)
+				# cv2.waitKey(0)
+				# sys.exit()
 			result = cv2.matchTemplate(card[0], template_crop, eval(MATCHING_METHODS[1]))
-			(_, maxVal, _, _) = cv2.minMaxLoc(result)	
+			(_, maxVal, _, _) = cv2.minMaxLoc(result)
+			# if (template[0] == '12291'):
+				# print maxVal
+				# cv2.imshow(str(card_index), template_crop)
+				# cv2.waitKey(0)
+				# sys.exit()
 			if (maxVal > max_val):
-				card_hearthpwn_id = template[0]
+				template_crop_image = template_crop
 				max_val = maxVal
-	print str(card_hearthpwn_id) + " - " + str(max_val)
-	if (max_val > 0.40):
+	#print "\n" + str(card_hearthpwn_id) + " - " + str(max_val)
+	if (max_val > 0.45):
+		cv2.imshow(str(card_index), template_crop_image)
 		x2_result = cv2.matchTemplate(card[1], x2_template, eval(MATCHING_METHODS[1]))
 		(_, x2_maxVal, _, x2_maxLoc) = cv2.minMaxLoc(x2_result)
 		has_x2 = x2_maxVal > 0.8
@@ -211,7 +230,7 @@ for card in grabbed_cards:
 		matched_cards.append(match_data)
 	else:
 		failed_cards.append(card_index)
-		#print "max: " + str(max_val)
+		print "\n" + str(card_hearthpwn_id) + " - " + str(max_val)
 
 	card_index = card_index + 1
 	update_progress(float(card_index) / float(len(grabbed_cards)), card_index)
@@ -225,8 +244,8 @@ print("> Saving card data to hearthgrab.txt")
 with open('hearthgrab.txt', 'w') as outfile:
     json.dump(matched_cards, outfile)
 
-#print "failed:"
-#print failed_cards
+print "failed:"
+print failed_cards
 #print matched_cards
 #cv2.imshow("test", edged_screen)
 #cv2.waitKey(0)

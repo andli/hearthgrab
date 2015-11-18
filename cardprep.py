@@ -4,9 +4,9 @@ import glob
 import os
 import sys
 import time
+import math
 
 CARD_SIZE = (174, 246)
-#CARD_SIZE = (87, 123)
 PROGRESS_BAR_LENGTH = 20
 counter = 0
 
@@ -24,23 +24,104 @@ def update_progress(progress, counter):
 if not os.path.exists(os.getcwd() + '/card_templates/'):
 	os.makedirs(os.getcwd() + '/card_templates/')
 	
+#cardPaths = [os.getcwd() + '/source_cards/683.png']#, os.getcwd() + '/source_cards/629.png', os.getcwd() + '/source_cards/632.png']
 start_time = time.clock()
 for imagePath in cardPaths:
-	im = cv2.imread(imagePath)
+	#print imagePath
+	img = cv2.imread(imagePath)
 	base = os.path.basename(imagePath)
 	cardname = os.path.splitext(base)[0]
 	
-	im_numpy = np.array(im)
-	if cardname.endswith('-g'):
-		crop_img = im_numpy[56:330+56, 24:228+24] # NOTE: its img[y: y + h, x: x + w] 
+	im_numpy = np.array(img)
+	im = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+	
+	has_white_background = im[2][2] > 125
+	if (has_white_background):
+		im_bordered = cv2.copyMakeBorder(im,10,10,10,10,cv2.BORDER_CONSTANT,value=(255,255,255))
+		ret,thresh = cv2.threshold(im_bordered,230,255,0)
 	else:
-		crop_img = im_numpy[40:344+40, 21:243+21] # NOTE: its img[y: y + h, x: x + w] 
+		im_bordered = cv2.copyMakeBorder(im,10,10,10,10,cv2.BORDER_CONSTANT,value=(0,0,0))
+		ret,thresh = cv2.threshold(im_bordered,0,50,0)
 	
-	# ---- Image fingerprint transformation here
-	gray_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
 	
-	resized_img = cv2.resize(gray_img, CARD_SIZE)
-	# ----
+	edges = cv2.Canny(thresh, 50, 100)
+	_,contours,hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+	# cv2.imshow("0",edges)
+	# cv2.waitKey(0)
+	# sys.exit()
+	areas = [cv2.contourArea(c) for c in contours]
+	max_indexes = np.argsort(areas)[-2:][::-1]
+	if (has_white_background):
+		cnt = contours[max_indexes[1]]
+	else:
+		cnt = contours[max_indexes[0]]
+	
+	block_card = edges.copy()
+	
+	#cv2.drawContours(im_bordered, [cnt], -1, (0,255,0), 2)
+	#cv2.drawContours(im, contours, -1, (0,255,0), 2)
+	cv2.drawContours(block_card, [cnt], 0, (255,255,255), cv2.FILLED)
+	card_edges = cv2.Canny(block_card, 50, 200)
+	
+	lines = cv2.HoughLinesP(card_edges, 1, math.pi/2, 2, None, 15, 1)
+	flattened_lines = np.squeeze(lines)
+	
+	x_lines_to_remove = []
+	for i in range (0, len(flattened_lines)):
+		if (flattened_lines[i][0] == flattened_lines[i][2]):
+			x_lines_to_remove.append(i)
+	x_lines = np.delete(flattened_lines, x_lines_to_remove, 0)
+	y_lines_to_remove = []
+	for i in range (0, len(flattened_lines)):
+		if (flattened_lines[i][1] == flattened_lines[i][3]):
+			y_lines_to_remove.append(i)
+	y_lines = np.delete(flattened_lines, y_lines_to_remove, 0)
+	
+	vertical_lines = y_lines[np.argsort(y_lines[:, 0])]
+	vertical_lines_to_remove = []
+	for i in range (0, len(vertical_lines)-1):
+		if (abs(vertical_lines[i][0] - vertical_lines[i+1][0]) < 4):
+			vertical_lines_to_remove.append(i)
+	vertical_lines_purged = np.delete(vertical_lines, vertical_lines_to_remove, 0)
+
+	horizontal_lines = x_lines[np.argsort(x_lines[:, 1])]
+	horizontal_lines_to_remove = []
+	for i in range (0, len(horizontal_lines)-1):
+		if (abs(horizontal_lines[i][1] - horizontal_lines[i+1][1]) < 4):
+			horizontal_lines_to_remove.append(i)
+	horizontal_lines_purged = np.delete(horizontal_lines, horizontal_lines_to_remove, 0)
+	#print "removed:"
+	#print horizontal_lines_purged
+
+	#print vertical_lines
+	vertical_limits = (vertical_lines_purged[0][0], vertical_lines_purged[-1][0])
+	#print vertical_limits
+	#print horizontal_lines
+	horizontal_limits = (horizontal_lines_purged[-2][1], horizontal_lines_purged[-1][1])
+	#print horizontal_limits
+	
+	# im_bordered = cv2.cvtColor(im_bordered, cv2.COLOR_GRAY2BGR)
+	# for line in horizontal_lines_purged:
+		# ### Find the relevant border lines
+		# pt1 = (line[0],line[1])
+		# pt2 = (line[2],line[3])
+		# cv2.line(im_bordered, pt1, pt2, (0,0,255), 2)
+	# for line in vertical_lines_purged:
+		# ### Find the relevant border lines
+		# pt1 = (line[0],line[1])
+		# pt2 = (line[2],line[3])
+		# cv2.line(im_bordered, pt1, pt2, (0,0,255), 2)
+	# cv2.imshow("1",im_bordered)
+	# cv2.waitKey(0)
+	#sys.exit()
+	
+	crop_img = im_bordered[horizontal_limits[0]+2:horizontal_limits[1], vertical_limits[0]+2:vertical_limits[1]] 
+	resized_img = cv2.resize(crop_img, CARD_SIZE)
+	
+	# cv2.imshow("0",img)
+	# cv2.imshow("1",resized_img)
+	# cv2.waitKey(0)
 	
 	cv2.imwrite(os.getcwd() + '/card_templates/' + cardname + '.png', resized_img)
 	counter = counter + 1
