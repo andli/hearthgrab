@@ -11,6 +11,7 @@ PROGRESS_BAR_LENGTH = 20
 counter = 0
 
 cardPaths = glob.glob(os.getcwd() + '/source_cards/*')
+cardPaths += glob.glob(os.getcwd() + '/source_cards_golden/*')
 total_cards = len(cardPaths)
 
 def update_progress(progress, counter):
@@ -24,13 +25,16 @@ if not os.path.exists(os.getcwd() + '/card_templates/'):
 	os.makedirs(os.getcwd() + '/card_templates/')
 	
 start_time = time.clock()
-for imagePath in glob.glob(os.getcwd() + '/source_cards/*'):
+for imagePath in cardPaths:
 	im = cv2.imread(imagePath)
 	base = os.path.basename(imagePath)
 	cardname = os.path.splitext(base)[0]
 	
 	im_numpy = np.array(im)
-	crop_img = im_numpy[40:344+40, 21:243+21] # NOTE: its img[y: y + h, x: x + w] 
+	if cardname.endswith('-g'):
+		crop_img = im_numpy[56:330+56, 24:228+24] # NOTE: its img[y: y + h, x: x + w] 
+	else:
+		crop_img = im_numpy[40:344+40, 21:243+21] # NOTE: its img[y: y + h, x: x + w] 
 	
 	# ---- Image fingerprint transformation here
 	gray_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)

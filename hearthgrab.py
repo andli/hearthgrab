@@ -34,9 +34,9 @@ def update_progress(progress, counter):
 
 ### Import csv card data
 card_data = {}
-with open('cardnames.csv', 'rb') as f:
+with open('card_data.csv', 'rb') as f:
 	reader = csv.reader(f)
-	card_data = {int(rows[1]):[rows[0], rows[2], rows[3]] for rows in reader} # Name, ID, class, cost
+	card_data = {rows[1]:[rows[0], rows[2], rows[3]] for rows in reader} # Name, ID, class, cost
 
 ### Load all template cards
 print("> Loading all template cards")
@@ -46,8 +46,8 @@ card_index = 0
 start_time = time.clock()
 for imagePath in glob.glob(os.getcwd() + '/card_templates/*'):
 	base = os.path.basename(imagePath)
-	cardname = os.path.splitext(base)[0]
-	CARD_TEMPLATES.append([cardname, cv2.cvtColor(cv2.imread(imagePath), cv2.COLOR_BGR2GRAY)])
+	card_id = os.path.splitext(base)[0]
+	CARD_TEMPLATES.append([card_id, cv2.cvtColor(cv2.imread(imagePath), cv2.COLOR_BGR2GRAY)])
 	card_index = card_index + 1
 	update_progress(float(card_index) / float(TOTAL_NUMBER_OF_CARD_TEMPLATES), card_index)
 
@@ -99,7 +99,7 @@ print("> Fetching all cards")
 
 start_time = time.clock()
 grabbed_cards = []
-
+current_class = None
 
 while (True):
 	### Move the cursor so it does not trigger visual effects
@@ -147,15 +147,15 @@ print("Collected all cards in %.2f seconds." % (end_time - start_time))
 print "Found: " + str(len(grabbed_cards))
 
 ### Save all found cards
-# print("> Saving all found cards")
-# start_time = time.clock()
-# card_index = 0
-# for card in grabbed_cards:
-	# cv2.imwrite(os.getcwd() + '/grabbed_cards/' + str(card_index) + '.png', card[0])
-	# card_index = card_index + 1
-	# update_progress(float(card_index) / float(len(grabbed_cards)), card_index)
-# end_time = time.clock()
-# print(" in %.2f seconds." % (end_time - start_time))
+print("> Saving all found cards")
+start_time = time.clock()
+card_index = 0
+for card in grabbed_cards:
+	cv2.imwrite(os.getcwd() + '/grabbed_cards/' + str(card_index) + '.png', card[0])
+	card_index = card_index + 1
+	update_progress(float(card_index) / float(len(grabbed_cards)), card_index)
+end_time = time.clock()
+print(" in %.2f seconds." % (end_time - start_time))
 
 ### Match all found cards
 print("> Matching all found cards")
@@ -175,10 +175,12 @@ for card in grabbed_cards:
 		last_matched_cost = 0
 	
 	for template in CARD_TEMPLATES:
-		template_class_name = card_data[int(template[0])][1]
+		#if (template[0].endswith('-g'):
+			#
+		template_class_name = card_data[template[0]][1]
 		if (template_class_name == ''):
 			template_class_name = 'neutral'
-		template_cost = card_data[int(template[0])][2]
+		template_cost = card_data[template[0]][2]
 		
 		if (template_cost < last_matched_cost):
 			continue
@@ -189,9 +191,9 @@ for card in grabbed_cards:
 			(_, maxVal, _, _) = cv2.minMaxLoc(result)	
 			if (maxVal > max_val):
 				card_hearthpwn_id = template[0]
-				max_val = maxVal		
-		
-	if (max_val > 0.45):
+				max_val = maxVal
+	print str(card_hearthpwn_id) + " - " + str(max_val)
+	if (max_val > 0.40):
 		x2_result = cv2.matchTemplate(card[1], x2_template, eval(MATCHING_METHODS[1]))
 		(_, x2_maxVal, _, x2_maxLoc) = cv2.minMaxLoc(x2_result)
 		has_x2 = x2_maxVal > 0.8
@@ -202,9 +204,10 @@ for card in grabbed_cards:
 			
 		match_data = {}
 		match_data['count'] = card_count
-		match_data['name'] = card_data[int(card_hearthpwn_id)][0]
-		last_matched_class_name = card_data[int(card_hearthpwn_id)][1]
-		last_matched_cost = card_data[int(card_hearthpwn_id)][2]
+		match_data['name'] = card_data[card_hearthpwn_id][0]
+		match_data['golden'] = card_hearthpwn_id.endswith('-g')
+		last_matched_class_name = card_data[card_hearthpwn_id][1]
+		last_matched_cost = card_data[card_hearthpwn_id][2]
 		matched_cards.append(match_data)
 	else:
 		failed_cards.append(card_index)
@@ -214,6 +217,7 @@ for card in grabbed_cards:
 	update_progress(float(card_index) / float(len(grabbed_cards)), card_index)
 end_time = time.clock()
 print(" in %.2f seconds." % (end_time - start_time))
+print("Total " + str(len(matched_cards)) + " cards.")
 
 ### Save cards to file
 print("> Saving card data to hearthgrab.txt")

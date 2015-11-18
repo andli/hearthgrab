@@ -98,15 +98,6 @@ Fire Elemental,636,Shaman,6
 Frost Elemental,598,,6
 Gadgetzan Auctioneer,131,,6
 Gazlowe,12287,,6
-Molten Giant,94,,20
-Clockwork Giant,12201,,12
-Mountain Giant,264,,12
-Mind Control,401,Priest,10
-Pyroblast,496,Mage,10
-Deathwing,474,,10
-Frost Giant,22262,,10
-Sea Giant,614,,10
-Varian Wrynn,22342,Warrior,10
 Tree of Life,12270,Druid,9
 Alexstrasza,303,,9
 Anub'arak,22324,Rogue,9
@@ -199,6 +190,7 @@ Frost Elemental,598,,6
 Gadgetzan Auctioneer,131,,6
 Gazlowe,12287,,6
 Gelbin Mekkatorque,251,,6
+Gelbin Mekkatorque,251-g,,6
 Grand Crusader,22326,,6
 Hogger,39,,6
 Illidan Stormrage,203,,6
@@ -271,6 +263,7 @@ Doomguard,507,Warlock,5
 Dragon Consort,14452,Paladin,5
 Druid of the Claw,587,Druid,5
 Druid of the Fang,12243,Druid,5
+Earth Elemental,124-g,Shaman,5
 Earth Elemental,124,Shaman,5
 Elite Tauren Chieftain,682,,5
 Faceless Manipulator,450,,5
@@ -819,4 +812,4 @@ Medivh,14695,Mage,0
 Rexxar,484,Hunter,0
 Thrall,319,Shaman,0
 Uther Lightbringer,257,Paladin,0
-Valeera Sanguinar,2,Rogue,0
+Valeera Sanguinar,2,Rogue,0,0
