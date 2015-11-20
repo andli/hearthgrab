@@ -196,17 +196,15 @@ for card in grabbed_cards:
 			continue
 
 		if (current_class_name == template_class_name.lower()):
-			template_crop = template[1][118:118+24, 14:14+147]
-
-			result = cv2.matchTemplate(card[0], template_crop, eval(MATCHING_METHODS[1]))
+			result = cv2.matchTemplate(card[0], template[1], eval(MATCHING_METHODS[1]))
 			(_, local_max_matching_value, _, _) = cv2.minMaxLoc(result)
 			# if (template[0] == '12291'):
 				# print local_max_matching_value
-				# cv2.imshow(str(card_index), template_crop)
+				# cv2.imshow(str(card_index), template[1])
 				# cv2.waitKey(0)
 				# sys.exit()
 			if (local_max_matching_value > max_matching_value):
-				template_crop_image = template_crop
+				template_crop_image = template[1]
 				max_matching_value = local_max_matching_value
 				chosen_card_hearthpwn_id = tried_card_hearthpwn_id
 	#print "\n" + str(tried_card_hearthpwn_id) + " - " + str(max_matching_value)

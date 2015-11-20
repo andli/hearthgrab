@@ -24,15 +24,14 @@ def update_progress(progress, counter):
 if not os.path.exists(os.getcwd() + '/resources/card_templates/'):
 	os.makedirs(os.getcwd() + '/resources/card_templates/')
 	
-#cardPaths = [os.getcwd() + '/resources/source_cards/683.png']#, os.getcwd() + '/source_cards/629.png', os.getcwd() + '/source_cards/632.png']
+#cardPaths = [os.getcwd() + '/resources/source_cards_golden/409-g.png', os.getcwd() + '/source_cards_golden/409-g.png']
 start_time = time.clock()
 for imagePath in cardPaths:
 	#print imagePath
 	img = cv2.imread(imagePath)
 	base = os.path.basename(imagePath)
 	cardname = os.path.splitext(base)[0]
-	
-	im_numpy = np.array(img)
+
 	im = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 	
 	has_white_background = im[2][2] > 125
@@ -64,7 +63,7 @@ for imagePath in cardPaths:
 	cv2.drawContours(block_card, [cnt], 0, (255,255,255), cv2.FILLED)
 	card_edges = cv2.Canny(block_card, 50, 200)
 	
-	lines = cv2.HoughLinesP(card_edges, 1, math.pi/2, 2, None, 15, 1)
+	lines = cv2.HoughLinesP(card_edges, 1, math.pi/2, 2, None, 20, 1)
 	flattened_lines = np.squeeze(lines)
 	
 	x_lines_to_remove = []
@@ -88,18 +87,20 @@ for imagePath in cardPaths:
 	horizontal_lines = x_lines[np.argsort(x_lines[:, 1])]
 	horizontal_lines_to_remove = []
 	for i in range (0, len(horizontal_lines)-1):
-		if (abs(horizontal_lines[i][1] - horizontal_lines[i+1][1]) < 4):
-			horizontal_lines_to_remove.append(i)
+		#if (abs(horizontal_lines[i][1] - horizontal_lines[i+1][1]) < 4):
+		horizontal_lines_to_remove.append(i)
 	horizontal_lines_purged = np.delete(horizontal_lines, horizontal_lines_to_remove, 0)
 	#print "removed:"
 	#print horizontal_lines_purged
 
 	#print vertical_lines
-	vertical_limits = (vertical_lines_purged[0][0], vertical_lines_purged[-1][0])
-	#print vertical_limits
+	x_limits = (vertical_lines_purged[0][0], vertical_lines_purged[-1][0])
+	y_bottom = horizontal_lines_purged[0][1]
+	y_limits = (int(round(y_bottom - float(x_limits[1] - x_limits[0]) * (345/float(244)))), y_bottom)
+	#print y_limits
 	#print horizontal_lines
-	horizontal_limits = (horizontal_lines_purged[-2][1], horizontal_lines_purged[-1][1])
-	#print horizontal_limits
+	#x_limits = (x_left, x_right)
+	#print x_limits
 	
 	# im_bordered = cv2.cvtColor(im_bordered, cv2.COLOR_GRAY2BGR)
 	# for line in horizontal_lines_purged:
@@ -114,16 +115,17 @@ for imagePath in cardPaths:
 		# cv2.line(im_bordered, pt1, pt2, (0,0,255), 2)
 	# cv2.imshow("1",im_bordered)
 	# cv2.waitKey(0)
-	#sys.exit()
+	# sys.exit()
 	
-	crop_img = im_bordered[horizontal_limits[0]+2:horizontal_limits[1], vertical_limits[0]+2:vertical_limits[1]] 
+	crop_img = im_bordered[y_limits[0]+2:y_limits[1], x_limits[0]+2:x_limits[1]] 
 	resized_img = cv2.resize(crop_img, CARD_SIZE)
+	template_crop = resized_img[118:118+24, 14:14+147]
 	
 	# cv2.imshow("0",img)
 	# cv2.imshow("1",resized_img)
 	# cv2.waitKey(0)
 	
-	cv2.imwrite(os.getcwd() + '/resources/card_templates/' + cardname + '.png', resized_img)
+	cv2.imwrite(os.getcwd() + '/resources/card_templates/' + cardname + '.png', template_crop)
 	counter = counter + 1
 	update_progress(float(counter) / float(total_cards), counter)
 end_time = time.clock()
