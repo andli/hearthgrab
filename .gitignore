@@ -41,6 +41,11 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
-card_templates/*
-grabbed_cards/*
+resources/card_templates/*
+resources/card_templates/*
+resources/source_cards/*
+resources/source_cards_golden/*
 hearthgrab.txt
+build/*
+dist/*
+hearthgrab.spec

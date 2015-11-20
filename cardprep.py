@@ -10,8 +10,8 @@ CARD_SIZE = (174, 246)
 PROGRESS_BAR_LENGTH = 20
 counter = 0
 
-cardPaths = glob.glob(os.getcwd() + '/source_cards/*')
-cardPaths += glob.glob(os.getcwd() + '/source_cards_golden/*')
+cardPaths = glob.glob(os.getcwd() + '/resources/source_cards/*')
+cardPaths += glob.glob(os.getcwd() + '/resources/source_cards_golden/*')
 total_cards = len(cardPaths)
 
 def update_progress(progress, counter):
@@ -21,10 +21,10 @@ def update_progress(progress, counter):
 	counter))
 	sys.stdout.flush()
 
-if not os.path.exists(os.getcwd() + '/card_templates/'):
-	os.makedirs(os.getcwd() + '/card_templates/')
+if not os.path.exists(os.getcwd() + '/resources/card_templates/'):
+	os.makedirs(os.getcwd() + '/resources/card_templates/')
 	
-#cardPaths = [os.getcwd() + '/source_cards/683.png']#, os.getcwd() + '/source_cards/629.png', os.getcwd() + '/source_cards/632.png']
+#cardPaths = [os.getcwd() + '/resources/source_cards/683.png']#, os.getcwd() + '/source_cards/629.png', os.getcwd() + '/source_cards/632.png']
 start_time = time.clock()
 for imagePath in cardPaths:
 	#print imagePath
@@ -123,7 +123,7 @@ for imagePath in cardPaths:
 	# cv2.imshow("1",resized_img)
 	# cv2.waitKey(0)
 	
-	cv2.imwrite(os.getcwd() + '/card_templates/' + cardname + '.png', resized_img)
+	cv2.imwrite(os.getcwd() + '/resources/card_templates/' + cardname + '.png', resized_img)
 	counter = counter + 1
 	update_progress(float(counter) / float(total_cards), counter)
 end_time = time.clock()

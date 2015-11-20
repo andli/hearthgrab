@@ -8,8 +8,7 @@ import glob
 import os
 import sys
 import time
-import win32gui
-import win32api, win32con
+import win32gui, win32api, win32con
 import math
 import csv, json
 
@@ -18,7 +17,7 @@ PROGRESS_BAR_LENGTH = 20
 CARD_POSITIONS = [[171,159],[372,159],[573,159],[774,159],[171,476],[372,476],[573,476],[774,476]]
 NEXT_PAGE_CLICK_POINT = [947,445]
 CARD_SIZE = [174, 246]
-TOTAL_NUMBER_OF_CARD_TEMPLATES = len(glob.glob(os.getcwd() + '/card_templates/*'))
+TOTAL_NUMBER_OF_CARD_TEMPLATES = len(glob.glob(os.getcwd() + '/resources/card_templates/*'))
 SIMILARITY_TOLERANCE = 10
 PAGE_TURN_TIME = 0.3 #0.3
 TWOEX_SIZE = [20,25]
@@ -36,7 +35,7 @@ def update_progress(progress, counter):
 
 ### Import csv card data
 card_data = {}
-with open('card_data.csv', 'rb') as f:
+with open('resources/card_data.csv', 'rb') as f:
 	reader = csv.reader(f, delimiter=',', quotechar='"')
 	card_data = {rows[1]:[rows[0], rows[2], rows[3]] for rows in reader} # Name, ID, class, cost
 
@@ -46,7 +45,7 @@ CARD_TEMPLATES = []
 CLASS_TEMPLATES = [] 
 card_index = 0
 start_time = time.clock()
-for imagePath in glob.glob(os.getcwd() + '/card_templates/*'):
+for imagePath in glob.glob(os.getcwd() + '/resources/card_templates/*'):
 	base = os.path.basename(imagePath)
 	card_id = os.path.splitext(base)[0]
 	CARD_TEMPLATES.append([card_id, cv2.cvtColor(cv2.imread(imagePath), cv2.COLOR_BGR2GRAY)])
@@ -56,7 +55,7 @@ for imagePath in glob.glob(os.getcwd() + '/card_templates/*'):
 class_names_in_order = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior', 'neutral']
 
 for class_name in class_names_in_order:
-	imagePath = os.getcwd() + '/class_templates/' + class_name + '.png'
+	imagePath = os.getcwd() + '/resources/class_templates/' + class_name + '.png'
 	CLASS_TEMPLATES.append([class_name, cv2.cvtColor(cv2.imread(imagePath), cv2.COLOR_BGR2GRAY)])
 end_time = time.clock()
 print(" in %.2f seconds." % (end_time - start_time))
@@ -160,7 +159,7 @@ print("Scanned " + str(page_count) + " pages.")
 # start_time = time.clock()
 # card_index = 0
 # for card in grabbed_cards:
-	# cv2.imwrite(os.getcwd() + '/grabbed_cards/' + str(card_index) + '.png', card[0])
+	# cv2.imwrite(os.getcwd() + '/resources/grabbed_cards/' + str(card_index) + '.png', card[0])
 	# card_index = card_index + 1
 	# update_progress(float(card_index) / float(len(grabbed_cards)), card_index)
 # end_time = time.clock()
@@ -175,7 +174,7 @@ last_matched_cost = 0
 last_matched_class_name = ''
 matched_cards = []
 failed_cards = []
-x2_template = cv2.cvtColor(cv2.imread('x2.png'), cv2.COLOR_BGR2GRAY)
+x2_template = cv2.cvtColor(cv2.imread('resources/x2.png'), cv2.COLOR_BGR2GRAY)
 for card in grabbed_cards:
 	tried_card_hearthpwn_id = None
 	chosen_card_hearthpwn_id = None
