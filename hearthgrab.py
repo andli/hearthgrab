@@ -36,9 +36,7 @@ def update_progress(progress, counter):
 card_data = {}
 with open('card_data.csv', 'rb') as f:
 	reader = csv.reader(f, delimiter=',', quotechar='"')
-	for row in reader:
-		if row:
-			card_data = {rows[1]:[rows[0], rows[2], rows[3]] for rows in reader} # Name, ID, class, cost
+	card_data = {rows[1]:[rows[0], rows[2], rows[3]] for rows in reader} # Name, ID, class, cost
 
 ### Load all template cards
 print("> Loading all template cards")
@@ -186,6 +184,7 @@ for card in grabbed_cards:
 			# card_hearthpwn_id = template[0][:-2]
 		# else:
 		card_hearthpwn_id = template[0]
+		#print card_hearthpwn_id
 		template_class_name = card_data[card_hearthpwn_id][1]
 		if (template_class_name == ''):
 			template_class_name = 'neutral'
@@ -196,10 +195,7 @@ for card in grabbed_cards:
 
 		if (current_class_name == template_class_name.lower()):
 			template_crop = template[1][118:118+24, 14:14+147]
-			
-				# cv2.imshow(str(card_index), template_crop)
-				# cv2.waitKey(0)
-				# sys.exit()
+
 			result = cv2.matchTemplate(card[0], template_crop, eval(MATCHING_METHODS[1]))
 			(_, maxVal, _, _) = cv2.minMaxLoc(result)
 			# if (template[0] == '12291'):
@@ -212,7 +208,7 @@ for card in grabbed_cards:
 				max_val = maxVal
 	#print "\n" + str(card_hearthpwn_id) + " - " + str(max_val)
 	if (max_val > 0.45):
-		cv2.imshow(str(card_index), template_crop_image)
+		#cv2.imshow(str(card_index), template_crop_image)
 		x2_result = cv2.matchTemplate(card[1], x2_template, eval(MATCHING_METHODS[1]))
 		(_, x2_maxVal, _, x2_maxLoc) = cv2.minMaxLoc(x2_result)
 		has_x2 = x2_maxVal > 0.8
