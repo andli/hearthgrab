@@ -24,6 +24,8 @@ PAGE_TURN_TIME = 0.3 #0.3
 TWOEX_SIZE = [20,25]
 CLASS_POSITION = [471,86]
 CLASS_SIZE = [170,35]
+PAGE_NO_POSITION = [500,750]
+PAGE_NO_SIZE = [120,25]
 
 def update_progress(progress, counter):
 	sys.stdout.write("\r[{0}{1}] {2}% ({3})".format('#'*(int(math.ceil(progress*PROGRESS_BAR_LENGTH))),\
@@ -112,8 +114,8 @@ while (True):
 	class_image = gray_window[CLASS_POSITION[1]: CLASS_POSITION[1] + CLASS_SIZE[1], CLASS_POSITION[0]: CLASS_POSITION[0] + CLASS_SIZE[0]]
 	for class_template in CLASS_TEMPLATES:
 		class_result = cv2.matchTemplate(class_image, class_template[1], eval(MATCHING_METHODS[1]))
-		(_, class_maxVal, _, _) = cv2.minMaxLoc(class_result)
-		if (class_maxVal > 0.8):
+		(_, class_local_max_matching_value, _, _) = cv2.minMaxLoc(class_result)
+		if (class_local_max_matching_value > 0.8):
 			current_class = class_template[0]
 			break
 	
@@ -141,8 +143,12 @@ while (True):
 	
 	### Check if we are on the last page
 	new_window = takeScreenshot()
-	similar = np.allclose(gray_window, new_window, SIMILARITY_TOLERANCE)
-	if (similar):
+	
+	last_window_page_no = gray_window[PAGE_NO_POSITION[1]: PAGE_NO_POSITION[1] + PAGE_NO_SIZE[1], PAGE_NO_POSITION[0]: PAGE_NO_POSITION[0] + PAGE_NO_SIZE[0]]
+	next_window_page_no = new_window[PAGE_NO_POSITION[1]: PAGE_NO_POSITION[1] + PAGE_NO_SIZE[1], PAGE_NO_POSITION[0]: PAGE_NO_POSITION[0] + PAGE_NO_SIZE[0]]
+	page_no_result = cv2.matchTemplate(last_window_page_no, next_window_page_no, eval(MATCHING_METHODS[1]))
+	(_, max_page_matching_value, _, _) = cv2.minMaxLoc(page_no_result) 
+	if (max_page_matching_value > 0.999):
 		break
 
 end_time = time.clock()
@@ -150,15 +156,15 @@ print("Collected all cards in %.2f seconds." % (end_time - start_time))
 print("Scanned " + str(page_count) + " pages.")
 
 ### Save all found cards
-print("> Saving all found cards")
-start_time = time.clock()
-card_index = 0
-for card in grabbed_cards:
-	cv2.imwrite(os.getcwd() + '/grabbed_cards/' + str(card_index) + '.png', card[0])
-	card_index = card_index + 1
-	update_progress(float(card_index) / float(len(grabbed_cards)), card_index)
-end_time = time.clock()
-print(" in %.2f seconds." % (end_time - start_time))
+# print("> Saving all found cards")
+# start_time = time.clock()
+# card_index = 0
+# for card in grabbed_cards:
+	# cv2.imwrite(os.getcwd() + '/grabbed_cards/' + str(card_index) + '.png', card[0])
+	# card_index = card_index + 1
+	# update_progress(float(card_index) / float(len(grabbed_cards)), card_index)
+# end_time = time.clock()
+# print(" in %.2f seconds." % (end_time - start_time))
 
 ### Match all found cards
 print("> Matching all found cards")
@@ -171,8 +177,9 @@ matched_cards = []
 failed_cards = []
 x2_template = cv2.cvtColor(cv2.imread('x2.png'), cv2.COLOR_BGR2GRAY)
 for card in grabbed_cards:
-	card_hearthpwn_id = None
-	max_val = 0
+	tried_card_hearthpwn_id = None
+	chosen_card_hearthpwn_id = None
+	max_matching_value = 0
 	current_class_name = card[2]
 	template_crop_image = None
 	
@@ -180,15 +187,11 @@ for card in grabbed_cards:
 		last_matched_cost = 0
 	
 	for template in CARD_TEMPLATES:
-		# if (template[0].endswith('-g')):
-			# card_hearthpwn_id = template[0][:-2]
-		# else:
-		card_hearthpwn_id = template[0]
-		#print card_hearthpwn_id
-		template_class_name = card_data[card_hearthpwn_id][1]
+		tried_card_hearthpwn_id = template[0]
+		template_class_name = card_data[tried_card_hearthpwn_id][1]
 		if (template_class_name == ''):
 			template_class_name = 'neutral'
-		template_cost = card_data[card_hearthpwn_id][2]
+		template_cost = card_data[tried_card_hearthpwn_id][2]
 		
 		if (template_cost < last_matched_cost):
 			continue
@@ -197,21 +200,23 @@ for card in grabbed_cards:
 			template_crop = template[1][118:118+24, 14:14+147]
 
 			result = cv2.matchTemplate(card[0], template_crop, eval(MATCHING_METHODS[1]))
-			(_, maxVal, _, _) = cv2.minMaxLoc(result)
+			(_, local_max_matching_value, _, _) = cv2.minMaxLoc(result)
 			# if (template[0] == '12291'):
-				# print maxVal
+				# print local_max_matching_value
 				# cv2.imshow(str(card_index), template_crop)
 				# cv2.waitKey(0)
 				# sys.exit()
-			if (maxVal > max_val):
+			if (local_max_matching_value > max_matching_value):
 				template_crop_image = template_crop
-				max_val = maxVal
-	#print "\n" + str(card_hearthpwn_id) + " - " + str(max_val)
-	if (max_val > 0.45):
+				max_matching_value = local_max_matching_value
+				chosen_card_hearthpwn_id = tried_card_hearthpwn_id
+	#print "\n" + str(tried_card_hearthpwn_id) + " - " + str(max_matching_value)
+	
+	if (max_matching_value > 0.45):
 		#cv2.imshow(str(card_index), template_crop_image)
 		x2_result = cv2.matchTemplate(card[1], x2_template, eval(MATCHING_METHODS[1]))
-		(_, x2_maxVal, _, x2_maxLoc) = cv2.minMaxLoc(x2_result)
-		has_x2 = x2_maxVal > 0.8
+		(_, x2_local_max_matching_value, _, x2_maxLoc) = cv2.minMaxLoc(x2_result)
+		has_x2 = x2_local_max_matching_value > 0.8
 		
 		card_count = 1
 		if has_x2:
@@ -219,14 +224,15 @@ for card in grabbed_cards:
 			
 		match_data = {}
 		match_data['count'] = card_count
-		match_data['name'] = card_data[card_hearthpwn_id][0]
-		match_data['golden'] = card_hearthpwn_id.endswith('-g')
-		last_matched_class_name = card_data[card_hearthpwn_id][1]
-		last_matched_cost = card_data[card_hearthpwn_id][2]
+		match_data['name'] = card_data[chosen_card_hearthpwn_id][0]
+		#print match_data['name']
+		match_data['golden'] = chosen_card_hearthpwn_id.endswith('-g')
+		last_matched_class_name = card_data[chosen_card_hearthpwn_id][1]
+		last_matched_cost = card_data[chosen_card_hearthpwn_id][2]
 		matched_cards.append(match_data)
 	else:
 		failed_cards.append(card_index)
-		print "\n" + str(card_hearthpwn_id) + " - " + str(max_val)
+		#print "\n" + str(tried_card_hearthpwn_id) + " - " + str(max_matching_value)
 
 	card_index = card_index + 1
 	update_progress(float(card_index) / float(len(grabbed_cards)), card_index)
