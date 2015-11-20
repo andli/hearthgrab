@@ -174,6 +174,7 @@ last_matched_cost = 0
 last_matched_class_name = ''
 matched_cards = []
 failed_cards = []
+number_of_blanks = 0
 x2_template = cv2.cvtColor(cv2.imread('resources/x2.png'), cv2.COLOR_BGR2GRAY)
 for card in grabbed_cards:
 	tried_card_hearthpwn_id = None
@@ -207,9 +208,9 @@ for card in grabbed_cards:
 				template_crop_image = template[1]
 				max_matching_value = local_max_matching_value
 				chosen_card_hearthpwn_id = tried_card_hearthpwn_id
-	#print "\n" + str(tried_card_hearthpwn_id) + " - " + str(max_matching_value)
+	#print "\n" + str(card_data[chosen_card_hearthpwn_id][0]) + " - " + str(max_matching_value)
 	
-	if (max_matching_value > 0.45):
+	if (max_matching_value > 0.75):
 		#cv2.imshow(str(card_index), template_crop_image)
 		x2_result = cv2.matchTemplate(card[1], x2_template, eval(MATCHING_METHODS[1]))
 		(_, x2_local_max_matching_value, _, x2_maxLoc) = cv2.minMaxLoc(x2_result)
@@ -227,10 +228,11 @@ for card in grabbed_cards:
 		last_matched_class_name = card_data[chosen_card_hearthpwn_id][1]
 		last_matched_cost = card_data[chosen_card_hearthpwn_id][2]
 		matched_cards.append(match_data)
-	else:
-		failed_cards.append(card_index)
+	elif (max_matching_value > 0.30):
+		failed_cards.append([card_index, card_data[chosen_card_hearthpwn_id][0], max_matching_value])
 		#print "\n" + str(tried_card_hearthpwn_id) + " - " + str(max_matching_value)
-
+	else:
+		number_of_blanks += 1
 	card_index = card_index + 1
 	update_progress(float(card_index) / float(len(grabbed_cards)), card_index)
 end_time = time.clock()
@@ -243,8 +245,10 @@ print("> Saving card data to hearthgrab.txt")
 with open('hearthgrab.txt', 'w') as outfile:
     json.dump(matched_cards, outfile)
 
-#print "failed:"
-#print failed_cards
+print "blanks:"
+print number_of_blanks
+print "failed:"
+print failed_cards
 #print matched_cards
 #cv2.imshow("test", edged_screen)
 #cv2.waitKey(0)
