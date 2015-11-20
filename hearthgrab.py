@@ -246,8 +246,8 @@ print("> Saving card data to hearthgrab.txt")
 with open('hearthgrab.txt', 'w') as outfile:
     json.dump(matched_cards, outfile)
 
-print "failed:"
-print failed_cards
+#print "failed:"
+#print failed_cards
 #print matched_cards
 #cv2.imshow("test", edged_screen)
 #cv2.waitKey(0)
