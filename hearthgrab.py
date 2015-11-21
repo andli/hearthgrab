@@ -225,7 +225,7 @@ for card in grabbed_cards:
 		match_data['name'] = card_data[chosen_card_hearthpwn_id][0]
 		#print match_data['name']
 		match_data['golden'] = chosen_card_hearthpwn_id.endswith('-g')
-		match_data['match_rate'] = max_matching_value
+		match_data['match_rate'] = int(round(max_matching_value * 100))
 		last_matched_class_name = card_data[chosen_card_hearthpwn_id][1]
 		last_matched_cost = card_data[chosen_card_hearthpwn_id][2]
 		matched_cards.append(match_data)
