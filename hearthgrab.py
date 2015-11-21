@@ -84,6 +84,8 @@ if window_position is None:
 	# Info for the user
 	print "Open Hearthstone windowed, keep it in front and run this script."
 	sys.exit()
+else:
+	print("Found! x,y: " + str(window_position[0][0]) + ", size: " + str(window_position[0][1]))
 
 ### Take a screenshot and crop it to remove titlebar and border
 
