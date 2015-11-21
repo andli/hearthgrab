@@ -254,8 +254,9 @@ with open('hearthgrab.txt', 'w') as outfile:
 
 print "blanks:"
 print number_of_blanks
-print "failed:"
-print failed_cards
+if (len(failed_cards) > 0):
+	print "failed:"
+	print failed_cards
 #print matched_cards
 #cv2.imshow("test", edged_screen)
 #cv2.waitKey(0)
