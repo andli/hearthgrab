@@ -210,7 +210,7 @@ for card in grabbed_cards:
 				chosen_card_hearthpwn_id = tried_card_hearthpwn_id
 	#print "\n" + str(card_data[chosen_card_hearthpwn_id][0]) + " - " + str(max_matching_value)
 	
-	if (max_matching_value > 0.75):
+	if (max_matching_value > 0.70):
 		#cv2.imshow(str(card_index), template_crop_image)
 		x2_result = cv2.matchTemplate(card[1], x2_template, eval(MATCHING_METHODS[1]))
 		(_, x2_local_max_matching_value, _, x2_maxLoc) = cv2.minMaxLoc(x2_result)
@@ -225,11 +225,16 @@ for card in grabbed_cards:
 		match_data['name'] = card_data[chosen_card_hearthpwn_id][0]
 		#print match_data['name']
 		match_data['golden'] = chosen_card_hearthpwn_id.endswith('-g')
+		match_data['match_rate'] = max_matching_value
 		last_matched_class_name = card_data[chosen_card_hearthpwn_id][1]
 		last_matched_cost = card_data[chosen_card_hearthpwn_id][2]
 		matched_cards.append(match_data)
 	elif (max_matching_value > 0.30):
 		failed_cards.append([card_index, card_data[chosen_card_hearthpwn_id][0], max_matching_value])
+		if not os.path.exists(os.getcwd() + '/failed_cards/'):
+			os.makedirs(os.getcwd() + '/failed_cards/')
+		cv2.imwrite(os.getcwd() + '/failed_cards/' + str(card_index) + '-card-' + card_data[chosen_card_hearthpwn_id][0] + '.png',card[0])
+		cv2.imwrite(os.getcwd() + '/failed_cards/' + str(card_index) + '-temp-' + card_data[chosen_card_hearthpwn_id][0] + '.png',template_crop_image)
 		#print "\n" + str(tried_card_hearthpwn_id) + " - " + str(max_matching_value)
 	else:
 		number_of_blanks += 1

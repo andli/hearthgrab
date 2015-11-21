@@ -45,6 +45,8 @@ resources/card_templates/*
 resources/card_templates/*
 resources/source_cards/*
 resources/source_cards_golden/*
+resources/source_cards2/*
+resources/source_cards_golden2/*
 hearthgrab.txt
 build/*
 dist/*

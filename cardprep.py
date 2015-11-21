@@ -21,10 +21,10 @@ def update_progress(progress, counter):
 	counter))
 	sys.stdout.flush()
 
-if not os.path.exists(os.getcwd() + '/resources/card_templates/'):
-	os.makedirs(os.getcwd() + '/resources/card_templates/')
+if not os.path.exists(os.getcwd() + '/resources/card_templates_new/'):
+	os.makedirs(os.getcwd() + '/resources/card_templates_new/')
 	
-#cardPaths = [os.getcwd() + '/resources/source_cards_golden/409-g.png', os.getcwd() + '/source_cards_golden/409-g.png']
+cardPaths = [os.getcwd() + '/resources/source_cards/629.png']
 start_time = time.clock()
 for imagePath in cardPaths:
 	#print imagePath
@@ -117,15 +117,16 @@ for imagePath in cardPaths:
 	# cv2.waitKey(0)
 	# sys.exit()
 	
-	crop_img = im_bordered[y_limits[0]+2:y_limits[1], x_limits[0]+2:x_limits[1]] 
+	crop_img = im_bordered[y_limits[0]+4+0:y_limits[1], x_limits[0]+0:x_limits[1]] 
 	resized_img = cv2.resize(crop_img, CARD_SIZE)
-	template_crop = resized_img[118:118+24, 14:14+147]
+	template_crop = resized_img[116:116+28, 12:12+151]
 	
-	# cv2.imshow("0",img)
-	# cv2.imshow("1",resized_img)
+	# cv2.imshow("original",img)
+	# cv2.imshow("resized",resized_img)
+	# cv2.imshow("cropped",template_crop)
 	# cv2.waitKey(0)
 	
-	cv2.imwrite(os.getcwd() + '/resources/card_templates/' + cardname + '.png', template_crop)
+	cv2.imwrite(os.getcwd() + '/resources/card_templates_new/' + cardname + '.png', template_crop)
 	counter = counter + 1
 	update_progress(float(counter) / float(total_cards), counter)
 end_time = time.clock()
