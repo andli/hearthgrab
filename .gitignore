@@ -51,3 +51,4 @@ hearthgrab.txt
 build/*
 dist/*
 hearthgrab.spec
+.idea/*
