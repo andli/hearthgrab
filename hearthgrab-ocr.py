@@ -1,36 +1,23 @@
 # hearthgrab
 
+import csv
+import glob
+import json
+import math
+import os
+import sys
+import time
+import win32api
+import win32con
+import win32gui
+from time import sleep
+
 import cv2
 import numpy as np
 from PIL import ImageGrab
 
-import glob
-import os
-import sys
-import time
-import win32gui, win32api, win32con
-import math
-import csv, json
-from time import sleep
 
-MATCHING_METHODS = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR', 'cv2.TM_CCORR_NORMED', 'cv2.TM_SQDIFF',
-                    'cv2.TM_SQDIFF_NORMED']
-PROGRESS_BAR_LENGTH = 20
-CARD_POSITIONS = [[171, 159], [372, 159], [573, 159], [774, 159], [171, 476], [372, 476], [573, 476], [774, 476]]
-NEXT_PAGE_CLICK_POINT = [947, 445]
-CARD_SIZE = [174, 246]
-TOTAL_NUMBER_OF_CARD_TEMPLATES = len(glob.glob(os.getcwd() + '/resources/card_templates/*'))
-SIMILARITY_TOLERANCE = 10
-PAGE_TURN_TIME = 0.3  # 0.3
-TWOEX_SIZE = [20, 25]
-CLASS_POSITION = [471, 86]
-CLASS_SIZE = [170, 35]
-PAGE_NO_POSITION = [500, 750]
-PAGE_NO_SIZE = [120, 25]
-CLASS_NAMES_IN_ORDER = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior',
-                        'neutral']
-
-
+# Help methods
 def update_progress(progress, counter):
     sys.stdout.write("\r[{0}{1}] {2}% ({3})".format('#' * (int(math.ceil(progress * PROGRESS_BAR_LENGTH))),
                                                     ' ' * (int(math.floor((1 - progress) * PROGRESS_BAR_LENGTH))),
@@ -38,6 +25,33 @@ def update_progress(progress, counter):
                                                     counter))
     sys.stdout.flush()
 
+
+MATCHING_METHODS = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR', 'cv2.TM_CCORR_NORMED', 'cv2.TM_SQDIFF',
+                    'cv2.TM_SQDIFF_NORMED']
+PROGRESS_BAR_LENGTH = 20
+#CARD_POSITIONS = [[171, 159], [372, 159], [573, 159], [774, 159], [171, 476], [372, 476], [573, 476], [774, 476]]
+#CARD_SIZE = [174, 246]
+#TOTAL_NUMBER_OF_CARD_TEMPLATES = len(glob.glob(os.getcwd() + '/resources/card_templates/*'))
+#SIMILARITY_TOLERANCE = 10
+PAGE_TURN_TIME = 0.3  # 0.3
+TWO_X_SIZE = [20, 25]  # TODO: Make relative or find in other way
+CLASS_POSITION = [471, 86]  # TODO: Make relative or find in other way
+CLASS_SIZE = [170, 35]
+PAGE_NO_POSITION = [500, 750]
+PAGE_NO_SIZE = [120, 25]
+CLASS_NAMES_IN_ORDER = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior',
+                        'neutral']
+CLASS_TEMPLATES = []
+
+# Determined constants
+WINDOW_RECTANGLE = []
+CARD_PAGE_RECTANGLE = []
+NEXT_PAGE_CLICK_POINT = []
+
+
+for class_name in CLASS_NAMES_IN_ORDER:
+    imagePath = os.getcwd() + '/resources/class_templates/' + class_name + '.png'
+    CLASS_TEMPLATES.append([class_name, cv2.cvtColor(cv2.imread(imagePath), cv2.COLOR_BGR2GRAY)])
 
 # Import csv card data
 with open('resources/card_data.csv', 'rb') as f:
@@ -48,7 +62,7 @@ with open('resources/card_data.csv', 'rb') as f:
 print("> Getting window position")
 
 
-def window_callback(hwnd, position):
+def window_callback(hwnd, w_rectangle):
     if win32gui.GetWindowText(hwnd) == 'Hearthstone':
         rect = win32gui.GetWindowRect(hwnd)
         client_origo_on_screen = win32gui.ClientToScreen(hwnd, rect[:2])
@@ -57,32 +71,27 @@ def window_callback(hwnd, position):
         y = client_origo_on_screen[1] - rect[1]
         w = client_wh_on_screen[0] - client_origo_on_screen[0]
         h = client_wh_on_screen[1] - client_origo_on_screen[1]
-        position.append(((x, y), (w, h)))
-        NEXT_PAGE_CLICK_POINT[0] = NEXT_PAGE_CLICK_POINT[0] + x
-        NEXT_PAGE_CLICK_POINT[1] = NEXT_PAGE_CLICK_POINT[1] + y
+        w_rectangle.append(((x, y), (w, h)))
 
 
-window_position = []
-win32gui.EnumWindows(window_callback, window_position)
-hwnd = win32gui.FindWindow(None, 'Hearthstone')
-win32gui.ShowWindow(hwnd, 5)
-win32gui.SetForegroundWindow(hwnd)
+win32gui.EnumWindows(window_callback, WINDOW_RECTANGLE)
+hs_hwnd = win32gui.FindWindow(None, 'Hearthstone')
+win32gui.ShowWindow(hs_hwnd, 5)
+win32gui.SetForegroundWindow(hs_hwnd)
 sleep(1)
 
-if window_position is None:
-    # Info for the user
-    print "Open Hearthstone windowed, keep it in front and run this script."
-    sys.exit()
-else:
-    print("Found! x,y: " + str(window_position[0][0]) + ", size: " + str(window_position[0][1]))
 
 # Take a screenshot and crop it to remove titlebar and border
-def take_screenshot():
+def screenshot_and_crop_to_window():
     im = ImageGrab.grab()
     im_numpy = np.array(im)
-    ((win_x, win_y), (win_w, win_h)) = window_position[0]
-    crop_img = im_numpy[win_y:win_y + win_h, win_x:win_x + win_w]  # NOTE: its img[y: y + h, x: x + w]
-    gray_window = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
+    ((win_x, win_y), (win_w, win_h)) = WINDOW_RECTANGLE[0]
+    cropped_window_image = im_numpy[win_y:win_y + win_h, win_x:win_x + win_w]  # NOTE: its img[y: y + h, x: x + w]
+    return cropped_window_image
+
+
+def find_card_page(cropped_window_image):
+    gray_window = cv2.cvtColor(cropped_window_image, cv2.COLOR_BGR2GRAY)
 
     # Find card area
     ret, thresh = cv2.threshold(gray_window, 128, 255, cv2.THRESH_BINARY)
@@ -92,19 +101,51 @@ def take_screenshot():
     areas = [cv2.contourArea(c) for c in contours]
     max_index = np.argmax(areas)
     cnt = contours[max_index]
-    x, y, w, h = cv2.boundingRect(cnt)
-    crop_cards = crop_img[y:y + h, x:x + w]
+
+    return cv2.boundingRect(cnt)
+
+
+# Save click point
+def get_click_point():
+    cropped_img = screenshot_and_crop_to_window()
+    x, y, w, h = find_card_page(cropped_img)
+    return x + w - 20, y + w / 2
+
+
+def get_card_page_image(cropped_window_image, card_page_bounding_rect):
+    x, y, w, h = card_page_bounding_rect
+    crop_cards = cropped_window_image[y:y + h, x:x + w]
 
     # Reverse BGR
     crop_cards = cv2.cvtColor(crop_cards, cv2.COLOR_BGR2RGB)
+    # cv2.imshow("allcards", crop_cards)
+    # cv2.waitKey(0)
+    # sys.exit()
+    return crop_cards
 
-    cv2.imshow("ttt", crop_cards)
-    cv2.waitKey(0)
+
+if WINDOW_RECTANGLE is None:
+    # Info for the user
+    print "Open Hearthstone windowed, keep it in front and run this script."
     sys.exit()
-    return gray_window
+
+print("Found! x,y: " + str(WINDOW_RECTANGLE[0][0]) + ", size: " + str(WINDOW_RECTANGLE[0][1]))
+
+NEXT_PAGE_CLICK_POINT = get_click_point()
+CARD_PAGE_RECTANGLE = find_card_page(screenshot_and_crop_to_window())
+
+
+# Take a screenshot and crop it to the card page
+def screenshot_and_crop_to_card_page():
+    im = ImageGrab.grab()
+    im_numpy = np.array(im)
+    x, y, w, h = CARD_PAGE_RECTANGLE
+    cropped_card_page_image = im_numpy[y:y + h, x:x + w]  # NOTE: its img[y: y + h, x: x + w]
+    return cropped_card_page_image
+
 
 # Loop all pages
-print("> Fetching all cards")
+print("> Looping all pages")
 
 start_time = time.clock()
 grabbed_cards = []
@@ -115,43 +156,49 @@ while True:
     win32api.SetCursorPos((NEXT_PAGE_CLICK_POINT[0], NEXT_PAGE_CLICK_POINT[1]))
 
     # Take screenshot
-    gray_window = take_screenshot()
+    cards_area = screenshot_and_crop_to_card_page()
+    cv2.imshow("allcards", cards_area)
+    cv2.waitKey(0)
+    sys.exit()
 
-    # Find the cards on each page
-    count = 0
-    for card_position in CARD_POSITIONS:
-        # card_image = gray_window[card_position[1]:card_position[1]+CARD_SIZE[1],card_position[0]:card_position[0]+CARD_SIZE[0]]
-        card_image = gray_window[card_position[1] + 110:card_position[1] + 110 + 40,
-                     card_position[0]:card_position[0] + CARD_SIZE[0]]
-        # cv2.imshow(str(count), card_image)
-        x2_image = gray_window[card_position[1] + CARD_SIZE[1]: card_position[1] + CARD_SIZE[1] + TWOEX_SIZE[1], \
-                   card_position[0] + CARD_SIZE[0] / 2 - TWOEX_SIZE[0]: card_position[0] + CARD_SIZE[0] / 2 +
-                                                                        TWOEX_SIZE[0]]
-        count += 1
-        # cv2.rectangle(gray_window, (CLASS_POSITION[0], CLASS_POSITION[1]), (CLASS_POSITION[0] + CLASS_SIZE[0], CLASS_POSITION[1] + CLASS_SIZE[1]), (0, 0, 255), 1)
-        grabbed_cards.append([card_image, x2_image, current_class])
-    # cv2.imshow("allcards", card_image)
-    # cv2.waitKey(0)
-    # sys.exit()
+    # ------------ here, get text areas
 
-    # Click to the next page
-    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN | win32con.MOUSEEVENTF_ABSOLUTE, 0, 0)
-    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP | win32con.MOUSEEVENTF_ABSOLUTE, 0, 0)
-    # win32api.ClipCursor((0,0,0,0))
-    time.sleep(PAGE_TURN_TIME);
-    page_count += 1
-
-    # Check if we are on the last page
-    new_window = take_screenshot()
-
-    last_window_page_no = gray_window[PAGE_NO_POSITION[1]: PAGE_NO_POSITION[1] + PAGE_NO_SIZE[1],
-                          PAGE_NO_POSITION[0]: PAGE_NO_POSITION[0] + PAGE_NO_SIZE[0]]
-    next_window_page_no = new_window[PAGE_NO_POSITION[1]: PAGE_NO_POSITION[1] + PAGE_NO_SIZE[1],
-                          PAGE_NO_POSITION[0]: PAGE_NO_POSITION[0] + PAGE_NO_SIZE[0]]
-    page_no_result = cv2.matchTemplate(last_window_page_no, next_window_page_no, eval(MATCHING_METHODS[1]))
-    (_, max_page_matching_value, _, _) = cv2.minMaxLoc(page_no_result)
-    if (max_page_matching_value > 0.999):
-        break
+    # # Find the cards on each page
+    # count = 0
+    # for card_position in CARD_POSITIONS:
+    #     # card_image = gray_window[card_position[1]:card_position[1]+CARD_SIZE[1],card_position[0]:card_position[0]+CARD_SIZE[0]]
+    #     card_image = cards_area[card_position[1] + 110:card_position[1] + 110 + 40,
+    #                  card_position[0]:card_position[0] + CARD_SIZE[0]]
+    #     # cv2.imshow(str(count), card_image)
+    #     x2_image = cards_area[card_position[1] + CARD_SIZE[1]: card_position[1] + CARD_SIZE[1] + TWO_X_SIZE[1], \
+    #                card_position[0] + CARD_SIZE[0] / 2 - TWO_X_SIZE[0]: card_position[0] + CARD_SIZE[0] / 2 +
+    #                                                                     TWO_X_SIZE[0]]
+    #     count += 1
+    #     # cv2.rectangle(gray_window, (CLASS_POSITION[0], CLASS_POSITION[1]), (CLASS_POSITION[0] + CLASS_SIZE[0], CLASS_POSITION[1] + CLASS_SIZE[1]), (0, 0, 255), 1)
+    #     grabbed_cards.append([card_image, x2_image, current_class])
+    # # cv2.imshow("allcards", card_image)
+    # # cv2.waitKey(0)
+    # # sys.exit()
+    #
+    # # Click to the next page
+    # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN | win32con.MOUSEEVENTF_ABSOLUTE, 0, 0)
+    # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP | win32con.MOUSEEVENTF_ABSOLUTE, 0, 0)
+    # # win32api.ClipCursor((0,0,0,0))
+    # time.sleep(PAGE_TURN_TIME);
+    # page_count += 1
+    #
+    # # Check if we are on the last page
+    # new_window = screenshot_and_crop_to_card_page()
+    #
+    # last_window_page_no = cards_area[PAGE_NO_POSITION[1]: PAGE_NO_POSITION[1] + PAGE_NO_SIZE[1],
+    #                       PAGE_NO_POSITION[0]: PAGE_NO_POSITION[0] + PAGE_NO_SIZE[0]]
+    # next_window_page_no = new_window[PAGE_NO_POSITION[1]: PAGE_NO_POSITION[1] + PAGE_NO_SIZE[1],
+    #                       PAGE_NO_POSITION[0]: PAGE_NO_POSITION[0] + PAGE_NO_SIZE[0]]
+    # page_no_result = cv2.matchTemplate(last_window_page_no, next_window_page_no, eval(MATCHING_METHODS[1]))
+    # (_, max_page_matching_value, _, _) = cv2.minMaxLoc(page_no_result)
+    # if (max_page_matching_value > 0.999):
+    #     break
+    break
 
 end_time = time.clock()
 print("Collected all cards in %.2f seconds." % (end_time - start_time))
