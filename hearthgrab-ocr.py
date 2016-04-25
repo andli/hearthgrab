@@ -143,7 +143,8 @@ def screenshot_and_crop_to_card_page():
     im_numpy = np.array(im)
     x, y, w, h = CARD_PAGE_RECTANGLE
     cropped_card_page_image = im_numpy[y:y + h, x:x + w]  # NOTE: its img[y: y + h, x: x + w]
-    return cropped_card_page_image
+    crop_cards = cv2.cvtColor(cropped_card_page_image, cv2.COLOR_BGR2RGB)
+    return crop_cards
 
 
 # Loop all pages
