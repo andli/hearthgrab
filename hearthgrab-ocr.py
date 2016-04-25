@@ -102,7 +102,9 @@ def find_card_page(cropped_window_image):
     max_index = np.argmax(areas)
     cnt = contours[max_index]
 
-    return cv2.boundingRect(cnt)
+    x, y, w, h = cv2.boundingRect(cnt)
+    ((win_x, win_y), (win_w, win_h)) = WINDOW_RECTANGLE[0]
+    return x + win_x, y + win_y, w, h
 
 
 # Save click point
