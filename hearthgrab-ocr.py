@@ -147,6 +147,48 @@ def screenshot_and_crop_to_card_page():
     return crop_cards
 
 
+def find_cards_rectangles(cards_area_image):
+    gray_window = cv2.cvtColor(cards_area_image, cv2.COLOR_RGB2GRAY)
+    ret, thresh = cv2.threshold(gray_window, 100, 255, cv2.THRESH_BINARY_INV)
+    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (1, 1))
+    dilated = cv2.dilate(thresh, kernel, iterations=8)  # dilate
+    cv2.imshow("0", dilated)
+    cv2.waitKey(0)
+    sys.exit()
+    #edges = cv2.Canny(thresh, 120, 220, 3)
+
+    _, contours, hierarchy = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    areas = [cv2.contourArea(c) for c in contours]
+    approx_card_area_percentage = 0.7 # percent of the card_page_area
+    card_page_area = CARD_PAGE_RECTANGLE[2] * CARD_PAGE_RECTANGLE[3]
+    card_contours = []
+
+    for contour_index in range(0, len(areas) - 1):
+        area_percentage = areas[contour_index] / card_page_area
+        area_delta = area_percentage - approx_card_area_percentage
+        if area_delta <= 0.1:
+            card_contours.append(contours[contour_index])
+    #print len(card_contours)
+    gray_window = cv2.cvtColor(thresh, cv2.COLOR_GRAY2RGB)
+    cv2.drawContours(gray_window, card_contours, -1, (0, 255, 0), cv2.FILLED)
+
+    cv2.imshow("allcards", gray_window)
+    cv2.waitKey(0)
+    sys.exit()
+    lines = cv2.HoughLinesP(edges, 2, math.pi / 2, 300, None,
+                            100, 0)
+    # CARD_PAGE_RECTANGLE[3] / 2, CARD_PAGE_RECTANGLE[3] / 8)
+
+    thresh_rgb = cv2.cvtColor(edges, cv2.COLOR_GRAY2RGB)
+
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+        cv2.line(thresh_rgb, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+
+
+
 # Loop all pages
 print("> Looping all pages")
 
@@ -160,7 +202,8 @@ while True:
 
     # Take screenshot
     cards_area = screenshot_and_crop_to_card_page()
-    cv2.imshow("allcards", cards_area)
+    find_cards_rectangles(cards_area)
+    #cv2.imshow("allcards", cards_area)
     #cv2.waitKey(0)
     #sys.exit()
 
