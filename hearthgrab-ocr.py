@@ -94,7 +94,7 @@ def find_card_page(cropped_window_image):
     gray_window = cv2.cvtColor(cropped_window_image, cv2.COLOR_BGR2GRAY)
 
     # Find card area
-    ret, thresh = cv2.threshold(gray_window, 128, 255, cv2.THRESH_BINARY)
+    ret, thresh = cv2.threshold(gray_window, 140, 255, cv2.THRESH_BINARY)
     _, contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     # Find the index of the largest contour
@@ -161,8 +161,8 @@ while True:
     # Take screenshot
     cards_area = screenshot_and_crop_to_card_page()
     cv2.imshow("allcards", cards_area)
-    cv2.waitKey(0)
-    sys.exit()
+    #cv2.waitKey(0)
+    #sys.exit()
 
     # ------------ here, get text areas
 
@@ -183,15 +183,16 @@ while True:
     # # cv2.waitKey(0)
     # # sys.exit()
     #
-    # # Click to the next page
-    # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN | win32con.MOUSEEVENTF_ABSOLUTE, 0, 0)
-    # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP | win32con.MOUSEEVENTF_ABSOLUTE, 0, 0)
-    # # win32api.ClipCursor((0,0,0,0))
-    # time.sleep(PAGE_TURN_TIME);
-    # page_count += 1
+    # Click to the next page
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN | win32con.MOUSEEVENTF_ABSOLUTE, 0, 0)
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP | win32con.MOUSEEVENTF_ABSOLUTE, 0, 0)
+    # win32api.ClipCursor((0,0,0,0))
+    time.sleep(PAGE_TURN_TIME);
+    page_count += 1
+    print page_count
     #
     # # Check if we are on the last page
-    # new_window = screenshot_and_crop_to_card_page()
+    new_window = screenshot_and_crop_to_card_page()
     #
     # last_window_page_no = cards_area[PAGE_NO_POSITION[1]: PAGE_NO_POSITION[1] + PAGE_NO_SIZE[1],
     #                       PAGE_NO_POSITION[0]: PAGE_NO_POSITION[0] + PAGE_NO_SIZE[0]]
@@ -199,9 +200,9 @@ while True:
     #                       PAGE_NO_POSITION[0]: PAGE_NO_POSITION[0] + PAGE_NO_SIZE[0]]
     # page_no_result = cv2.matchTemplate(last_window_page_no, next_window_page_no, eval(MATCHING_METHODS[1]))
     # (_, max_page_matching_value, _, _) = cv2.minMaxLoc(page_no_result)
-    # if (max_page_matching_value > 0.999):
-    #     break
-    break
+    #if (max_page_matching_value > 0.999):
+    if page_count > 20:
+        break
 
 end_time = time.clock()
 print("Collected all cards in %.2f seconds." % (end_time - start_time))
