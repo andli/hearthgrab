@@ -29,10 +29,16 @@ def update_progress(progress, counter):
 MATCHING_METHODS = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR', 'cv2.TM_CCORR_NORMED', 'cv2.TM_SQDIFF',
                     'cv2.TM_SQDIFF_NORMED']
 PROGRESS_BAR_LENGTH = 20
-#CARD_POSITIONS = [[171, 159], [372, 159], [573, 159], [774, 159], [171, 476], [372, 476], [573, 476], [774, 476]]
-#CARD_SIZE = [174, 246]
-#TOTAL_NUMBER_OF_CARD_TEMPLATES = len(glob.glob(os.getcwd() + '/resources/card_templates/*'))
-#SIMILARITY_TOLERANCE = 10
+# CARD_POSITIONS = [[171, 159], [372, 159], [573, 159], [774, 159], [171, 476], [372, 476], [573, 476], [774, 476]]
+CARD_POSITIONS = [
+    [(0.0442, 0.2518), (0.2813, 0.2518)], [(0.5184, 0.2518), (0.7555, 0.2518)],
+    [(0.2211, 0.2936), (0.4582, 0.2936)], [(0.6953, 0.2936), (0.9324, 0.2936)],
+    [(0.0442, 0.6265), (0.2813, 0.6265)], [(0.5184, 0.6265), (0.7555, 0.6265)],
+    [(0.2211, 0.6683), (0.4582, 0.6683)], [(0.6953, 0.6683), (0.9324, 0.6683)]
+]
+# CARD_SIZE = [174, 246]
+# TOTAL_NUMBER_OF_CARD_TEMPLATES = len(glob.glob(os.getcwd() + '/resources/card_templates/*'))
+# SIMILARITY_TOLERANCE = 10
 PAGE_TURN_TIME = 0.3  # 0.3
 TWO_X_SIZE = [20, 25]  # TODO: Make relative or find in other way
 CLASS_POSITION = [471, 86]  # TODO: Make relative or find in other way
@@ -47,7 +53,6 @@ CLASS_TEMPLATES = []
 WINDOW_RECTANGLE = []
 CARD_PAGE_RECTANGLE = []
 NEXT_PAGE_CLICK_POINT = []
-
 
 for class_name in CLASS_NAMES_IN_ORDER:
     imagePath = os.getcwd() + '/resources/class_templates/' + class_name + '.png'
@@ -94,7 +99,7 @@ def find_card_page(cropped_window_image):
     gray_window = cv2.cvtColor(cropped_window_image, cv2.COLOR_BGR2GRAY)
 
     # Find card area
-    ret, thresh = cv2.threshold(gray_window, 140, 255, cv2.THRESH_BINARY)
+    ret, thresh = cv2.threshold(gray_window, 105, 255, cv2.THRESH_BINARY)
     _, contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     # Find the index of the largest contour
@@ -102,7 +107,27 @@ def find_card_page(cropped_window_image):
     max_index = np.argmax(areas)
     cnt = contours[max_index]
 
-    x, y, w, h = cv2.boundingRect(cnt)
+    h, w = gray_window.shape[:2]
+    contours_mask = np.zeros((h, w, 3), np.uint8)
+    contours_mask = cv2.cvtColor(contours_mask, cv2.COLOR_RGB2GRAY)
+    cv2.drawContours(contours_mask, [cnt], 0, (255, 255, 255))
+
+    lines = cv2.HoughLinesP(contours_mask, 8, math.pi / 2, h / 2, minLineLength=w / 4, maxLineGap=w / 2)
+    #print lines
+
+    contours_mask = cv2.cvtColor(contours_mask, cv2.COLOR_GRAY2RGB)
+    x_values = []
+    y_values = []
+    for line in lines:  #
+        x1, y1, x2, y2 = line[0]
+        if x1 == x2:  # vertical line
+            x_values.append(x1)
+        if y1 == y2:  # horizontal line
+            y_values.append(y1)
+        cv2.line(contours_mask, (x1, y1), (x2, y2), (0, 255, 0), 1)
+
+    x, y, w, h = min(x_values), min(y_values), max(x_values) - min(x_values), max(y_values) - min(y_values)
+
     ((win_x, win_y), (win_w, win_h)) = WINDOW_RECTANGLE[0]
     return x + win_x, y + win_y, w, h
 
@@ -144,49 +169,56 @@ def screenshot_and_crop_to_card_page():
     x, y, w, h = CARD_PAGE_RECTANGLE
     cropped_card_page_image = im_numpy[y:y + h, x:x + w]  # NOTE: its img[y: y + h, x: x + w]
     crop_cards = cv2.cvtColor(cropped_card_page_image, cv2.COLOR_BGR2RGB)
+
     return crop_cards
 
 
 def find_cards_rectangles(cards_area_image):
-    gray_window = cv2.cvtColor(cards_area_image, cv2.COLOR_RGB2GRAY)
-    ret, thresh = cv2.threshold(gray_window, 100, 255, cv2.THRESH_BINARY_INV)
-    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (1, 1))
-    dilated = cv2.dilate(thresh, kernel, iterations=8)  # dilate
-    cv2.imshow("0", dilated)
+    CARD_PAGE_AREA = CARD_PAGE_RECTANGLE[2] * CARD_PAGE_RECTANGLE[3]
+
+    gray = cv2.cvtColor(cards_area_image, cv2.COLOR_RGB2GRAY)
+    _, thresh = cv2.threshold(gray, 105, 255, cv2.THRESH_BINARY)
+
+    thresh = cv2.bitwise_not(thresh)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (1, 1))
+    DILATE_ERODE_ITER = 8
+    dilated = cv2.dilate(thresh, kernel, iterations=DILATE_ERODE_ITER)
+    eroded = cv2.morphologyEx(dilated, cv2.MORPH_OPEN, kernel, iterations=DILATE_ERODE_ITER)
+
+    cv2.imshow("allcards", gray)
     cv2.waitKey(0)
     sys.exit()
-    #edges = cv2.Canny(thresh, 120, 220, 3)
 
-    _, contours, hierarchy = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    des = eroded
+    _, contour, hier = cv2.findContours(des, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
 
-    areas = [cv2.contourArea(c) for c in contours]
-    approx_card_area_percentage = 0.7 # percent of the card_page_area
-    card_page_area = CARD_PAGE_RECTANGLE[2] * CARD_PAGE_RECTANGLE[3]
-    card_contours = []
+    for cnt in contour:
+        if cv2.contourArea(cnt) < CARD_PAGE_AREA / 2:  # sanity check for contour size
+            cv2.drawContours(des, [cnt], 0, 255, -1)
 
-    for contour_index in range(0, len(areas) - 1):
-        area_percentage = areas[contour_index] / card_page_area
-        area_delta = area_percentage - approx_card_area_percentage
-        if area_delta <= 0.1:
-            card_contours.append(contours[contour_index])
-    #print len(card_contours)
-    gray_window = cv2.cvtColor(thresh, cv2.COLOR_GRAY2RGB)
-    cv2.drawContours(gray_window, card_contours, -1, (0, 255, 0), cv2.FILLED)
+    gray = cv2.bitwise_not(des)
+    edges = cv2.Canny(gray, 150, 220, 33)
 
-    cv2.imshow("allcards", gray_window)
-    cv2.waitKey(0)
-    sys.exit()
-    lines = cv2.HoughLinesP(edges, 2, math.pi / 2, 300, None,
-                            100, 0)
-    # CARD_PAGE_RECTANGLE[3] / 2, CARD_PAGE_RECTANGLE[3] / 8)
+    x, y = 0, 0
+    h, w = edges.shape[:2]
+    FRAME_THICKNESS = w / 50
+    cv2.line(edges, (x, y), (x + w, y), 0, FRAME_THICKNESS)
+    cv2.line(edges, (x + w, y), (x + w, y + h), 0, FRAME_THICKNESS)
+    cv2.line(edges, (x + w, y + h), (x, y + h), 0, FRAME_THICKNESS)
+    cv2.line(edges, (x, y + h), (x, y), 0, FRAME_THICKNESS)
+
+    lines = cv2.HoughLinesP(edges, 5, math.pi / 2, w / 10, minLineLength=w / 10, maxLineGap=w / 4)
+    #print len(lines)
 
     thresh_rgb = cv2.cvtColor(edges, cv2.COLOR_GRAY2RGB)
 
     for line in lines:
         x1, y1, x2, y2 = line[0]
-        cv2.line(thresh_rgb, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        cv2.line(thresh_rgb, (x1, y1), (x2, y2), (0, 255, 0), 1)
 
-
+    # cv2.imshow("allcards", thresh_rgb)
+    # cv2.waitKey(0)
+    # sys.exit()
 
 
 # Loop all pages
@@ -202,10 +234,20 @@ while True:
 
     # Take screenshot
     cards_area = screenshot_and_crop_to_card_page()
-    find_cards_rectangles(cards_area)
-    #cv2.imshow("allcards", cards_area)
-    #cv2.waitKey(0)
-    #sys.exit()
+    #find_cards_rectangles(cards_area)
+
+    h = CARD_PAGE_RECTANGLE[2]
+    w = CARD_PAGE_RECTANGLE[3]
+    for rect in CARD_POSITIONS:
+        x1, y1 = rect[0]
+        x2, y2 = rect[1]
+        pt1 = int(round(x1 * w)), int(round(y1 * h))
+        pt2 = int(round(x2 * w)), int(round(y2 * h))
+        cv2.rectangle(cards_area, pt1, pt2, (255, 0, 255), 2)
+
+    cv2.imshow("allcards", cards_area)
+    cv2.waitKey(0)
+    sys.exit()
 
     # ------------ here, get text areas
 
@@ -243,7 +285,7 @@ while True:
     #                       PAGE_NO_POSITION[0]: PAGE_NO_POSITION[0] + PAGE_NO_SIZE[0]]
     # page_no_result = cv2.matchTemplate(last_window_page_no, next_window_page_no, eval(MATCHING_METHODS[1]))
     # (_, max_page_matching_value, _, _) = cv2.minMaxLoc(page_no_result)
-    #if (max_page_matching_value > 0.999):
+    # if (max_page_matching_value > 0.999):
     if page_count > 20:
         break
 
