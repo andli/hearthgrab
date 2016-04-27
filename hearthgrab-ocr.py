@@ -16,8 +16,9 @@ import cv2
 import numpy as np
 from PIL import ImageGrab
 
+from colorlabeler import ColorLabeler
 
-# Help methods
+
 def update_progress(progress, counter):
     sys.stdout.write("\r[{0}{1}] {2}% ({3})".format('#' * (int(math.ceil(progress * PROGRESS_BAR_LENGTH))),
                                                     ' ' * (int(math.floor((1 - progress) * PROGRESS_BAR_LENGTH))),
@@ -29,16 +30,17 @@ def update_progress(progress, counter):
 MATCHING_METHODS = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR', 'cv2.TM_CCORR_NORMED', 'cv2.TM_SQDIFF',
                     'cv2.TM_SQDIFF_NORMED']
 PROGRESS_BAR_LENGTH = 20
-# CARD_POSITIONS = [[171, 159], [372, 159], [573, 159], [774, 159], [171, 476], [372, 476], [573, 476], [774, 476]]
+
 CARD_POSITIONS = [
-    [(0.0442, 0.2518), (0.2813, 0.2518)], [(0.5184, 0.2518), (0.7555, 0.2518)],
-    [(0.2211, 0.2936), (0.4582, 0.2936)], [(0.6953, 0.2936), (0.9324, 0.2936)],
-    [(0.0442, 0.6265), (0.2813, 0.6265)], [(0.5184, 0.6265), (0.7555, 0.6265)],
-    [(0.2211, 0.6683), (0.4582, 0.6683)], [(0.6953, 0.6683), (0.9324, 0.6683)]
-]
-# CARD_SIZE = [174, 246]
-# TOTAL_NUMBER_OF_CARD_TEMPLATES = len(glob.glob(os.getcwd() + '/resources/card_templates/*'))
-# SIMILARITY_TOLERANCE = 10
+    [(0.0442260, 0.2924394), (0.2211302, 0.3399415)],
+    [(0.2813268, 0.2924394), (0.4582310, 0.3399415)],
+    [(0.5150000, 0.2924394), (0.7000000, 0.3399415)],
+    [(0.7505283, 0.2924394), (0.9324324, 0.3399415)],
+    [(0.0442260, 0.7275321), (0.2211302, 0.7760342)],
+    [(0.2813268, 0.7275321), (0.4582310, 0.7760342)],
+    [(0.5184275, 0.7275321), (0.6953317, 0.7760342)],
+    [(0.7555283, 0.7275321), (0.9324324, 0.7760342)]]
+
 PAGE_TURN_TIME = 0.3  # 0.3
 TWO_X_SIZE = [20, 25]  # TODO: Make relative or find in other way
 CLASS_POSITION = [471, 86]  # TODO: Make relative or find in other way
@@ -112,8 +114,8 @@ def find_card_page(cropped_window_image):
     contours_mask = cv2.cvtColor(contours_mask, cv2.COLOR_RGB2GRAY)
     cv2.drawContours(contours_mask, [cnt], 0, (255, 255, 255))
 
-    lines = cv2.HoughLinesP(contours_mask, 8, math.pi / 2, h / 2, minLineLength=w / 4, maxLineGap=w / 2)
-    #print lines
+    lines = cv2.HoughLinesP(contours_mask, 8, math.pi / 2, h / 2, minLineLength=w / 2, maxLineGap=w / 2)
+    # print lines
 
     contours_mask = cv2.cvtColor(contours_mask, cv2.COLOR_GRAY2RGB)
     x_values = []
@@ -127,6 +129,10 @@ def find_card_page(cropped_window_image):
         cv2.line(contours_mask, (x1, y1), (x2, y2), (0, 255, 0), 1)
 
     x, y, w, h = min(x_values), min(y_values), max(x_values) - min(x_values), max(y_values) - min(y_values)
+
+    # cv2.# imshow("allcards", contours_mask)
+    # cv2.waitKey(0)
+    # sys.exit()
 
     ((win_x, win_y), (win_w, win_h)) = WINDOW_RECTANGLE[0]
     return x + win_x, y + win_y, w, h
@@ -173,54 +179,6 @@ def screenshot_and_crop_to_card_page():
     return crop_cards
 
 
-def find_cards_rectangles(cards_area_image):
-    CARD_PAGE_AREA = CARD_PAGE_RECTANGLE[2] * CARD_PAGE_RECTANGLE[3]
-
-    gray = cv2.cvtColor(cards_area_image, cv2.COLOR_RGB2GRAY)
-    _, thresh = cv2.threshold(gray, 105, 255, cv2.THRESH_BINARY)
-
-    thresh = cv2.bitwise_not(thresh)
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (1, 1))
-    DILATE_ERODE_ITER = 8
-    dilated = cv2.dilate(thresh, kernel, iterations=DILATE_ERODE_ITER)
-    eroded = cv2.morphologyEx(dilated, cv2.MORPH_OPEN, kernel, iterations=DILATE_ERODE_ITER)
-
-    cv2.imshow("allcards", gray)
-    cv2.waitKey(0)
-    sys.exit()
-
-    des = eroded
-    _, contour, hier = cv2.findContours(des, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
-
-    for cnt in contour:
-        if cv2.contourArea(cnt) < CARD_PAGE_AREA / 2:  # sanity check for contour size
-            cv2.drawContours(des, [cnt], 0, 255, -1)
-
-    gray = cv2.bitwise_not(des)
-    edges = cv2.Canny(gray, 150, 220, 33)
-
-    x, y = 0, 0
-    h, w = edges.shape[:2]
-    FRAME_THICKNESS = w / 50
-    cv2.line(edges, (x, y), (x + w, y), 0, FRAME_THICKNESS)
-    cv2.line(edges, (x + w, y), (x + w, y + h), 0, FRAME_THICKNESS)
-    cv2.line(edges, (x + w, y + h), (x, y + h), 0, FRAME_THICKNESS)
-    cv2.line(edges, (x, y + h), (x, y), 0, FRAME_THICKNESS)
-
-    lines = cv2.HoughLinesP(edges, 5, math.pi / 2, w / 10, minLineLength=w / 10, maxLineGap=w / 4)
-    #print len(lines)
-
-    thresh_rgb = cv2.cvtColor(edges, cv2.COLOR_GRAY2RGB)
-
-    for line in lines:
-        x1, y1, x2, y2 = line[0]
-        cv2.line(thresh_rgb, (x1, y1), (x2, y2), (0, 255, 0), 1)
-
-    # cv2.imshow("allcards", thresh_rgb)
-    # cv2.waitKey(0)
-    # sys.exit()
-
-
 # Loop all pages
 print("> Looping all pages")
 
@@ -228,22 +186,38 @@ start_time = time.clock()
 grabbed_cards = []
 current_class = None
 page_count = 0
+cl = ColorLabeler()
 while True:
     # Move the cursor so it does not trigger visual effects
     win32api.SetCursorPos((NEXT_PAGE_CLICK_POINT[0], NEXT_PAGE_CLICK_POINT[1]))
 
     # Take screenshot
     cards_area = screenshot_and_crop_to_card_page()
-    #find_cards_rectangles(cards_area)
 
-    h = CARD_PAGE_RECTANGLE[2]
-    w = CARD_PAGE_RECTANGLE[3]
+    w = CARD_PAGE_RECTANGLE[2]
+    h = CARD_PAGE_RECTANGLE[3]
+
+    count = 0
     for rect in CARD_POSITIONS:
+        count += 1
         x1, y1 = rect[0]
         x2, y2 = rect[1]
         pt1 = int(round(x1 * w)), int(round(y1 * h))
         pt2 = int(round(x2 * w)), int(round(y2 * h))
-        cv2.rectangle(cards_area, pt1, pt2, (255, 0, 255), 2)
+        crop_half_side = int(round(h * 0.008))
+        crop_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - crop_half_side / 2
+        crop_y = pt2[1] - crop_half_side / 4
+        rarity_image = cards_area[crop_y:crop_y + 2 * crop_half_side, crop_x:crop_x + 2 * crop_half_side]
+        blurred = cv2.GaussianBlur(rarity_image, (5, 5), 0)
+
+        lab = cv2.cvtColor(blurred, cv2.COLOR_BGR2LAB)
+        color = cl.label(lab)
+        print count, color
+        # cv2.imshow(str(count) + color, blurred)
+        cv2.rectangle(cards_area, (crop_x, crop_y),
+                      (crop_x + 2 * crop_half_side, crop_y + 2 * crop_half_side), (0, 255, 0))
+        cv2.putText(cards_area, color, (crop_x - 50, crop_y + 30), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
+        cv2.rectangle(cards_area, pt1, pt2, (255, 0, 255), 1)
 
     cv2.imshow("allcards", cards_area)
     cv2.waitKey(0)
