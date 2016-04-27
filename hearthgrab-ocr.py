@@ -32,14 +32,14 @@ MATCHING_METHODS = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR', 'cv
 PROGRESS_BAR_LENGTH = 20
 
 CARD_POSITIONS = [
-    [(0.0442260, 0.2924394), (0.2211302, 0.3399415)],
-    [(0.2813268, 0.2924394), (0.4582310, 0.3399415)],
-    [(0.5150000, 0.2924394), (0.7000000, 0.3399415)],
-    [(0.7505283, 0.2924394), (0.9324324, 0.3399415)],
-    [(0.0442260, 0.7275321), (0.2211302, 0.7760342)],
-    [(0.2813268, 0.7275321), (0.4582310, 0.7760342)],
-    [(0.5184275, 0.7275321), (0.6953317, 0.7760342)],
-    [(0.7555283, 0.7275321), (0.9324324, 0.7760342)]]
+    [(0.032, 0.295), (0.235, 0.342)],
+    [(0.269, 0.295), (0.472, 0.342)],
+    [(0.507, 0.295), (0.710, 0.342)],
+    [(0.743, 0.295), (0.947, 0.342)],
+    [(0.032, 0.731), (0.235, 0.778)],
+    [(0.269, 0.731), (0.472, 0.778)],
+    [(0.507, 0.731), (0.710, 0.778)],
+    [(0.743, 0.731), (0.947, 0.778)]]
 
 PAGE_TURN_TIME = 0.3  # 0.3
 TWO_X_SIZE = [20, 25]  # TODO: Make relative or find in other way
@@ -204,19 +204,20 @@ while True:
         x2, y2 = rect[1]
         pt1 = int(round(x1 * w)), int(round(y1 * h))
         pt2 = int(round(x2 * w)), int(round(y2 * h))
-        crop_half_side = int(round(h * 0.008))
-        crop_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - crop_half_side / 2
-        crop_y = pt2[1] - crop_half_side / 4
+        crop_half_side = int(round(h * 0.02))
+        crop_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - crop_half_side
+        crop_y = pt2[1] - crop_half_side / 4 * 3
         rarity_image = cards_area[crop_y:crop_y + 2 * crop_half_side, crop_x:crop_x + 2 * crop_half_side]
         blurred = cv2.GaussianBlur(rarity_image, (5, 5), 0)
-
         lab = cv2.cvtColor(blurred, cv2.COLOR_BGR2LAB)
         color = cl.label(lab)
         print count, color
+        # mean = cv2.mean(blurred)
+        # print mean
         # cv2.imshow(str(count) + color, blurred)
         cv2.rectangle(cards_area, (crop_x, crop_y),
                       (crop_x + 2 * crop_half_side, crop_y + 2 * crop_half_side), (0, 255, 0))
-        cv2.putText(cards_area, color, (crop_x - 50, crop_y + 30), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
+        cv2.putText(cards_area, color, (crop_x - 50, crop_y + 130), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), 2)
         cv2.rectangle(cards_area, pt1, pt2, (255, 0, 255), 1)
 
     cv2.imshow("allcards", cards_area)

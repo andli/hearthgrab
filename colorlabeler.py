@@ -12,7 +12,7 @@ class ColorLabeler:
             "blank": (219, 198, 144),
             "legendary": (170, 122, 45),
             "epic": (136, 60, 160),
-            "uncommon": (38, 81, 143),
+            "uncommon": (52, 107, 184),
             "common": (127, 139, 152)})
 
         # allocate memory for the L*a*b* image, then initialize
@@ -54,7 +54,7 @@ class ColorLabeler:
                 mindist = (d, i)
 
         # return the name of the color with the smallest distance
-        if mindist[0] > 40:
-            return "error"
+        if mindist[0] > 80:
+            return "N/A"
         print mindist[0]
         return self.colorNames[mindist[1]]
