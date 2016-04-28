@@ -11,6 +11,7 @@ import win32api
 import win32con
 import win32gui
 from time import sleep
+from collections import OrderedDict
 
 import cv2
 import numpy as np
@@ -121,12 +122,12 @@ def find_card_page(cropped_window_image):
     x_values = []
     y_values = []
     for line in lines:  #
-        x1, y1, x2, y2 = line[0]
-        if x1 == x2:  # vertical line
-            x_values.append(x1)
-        if y1 == y2:  # horizontal line
-            y_values.append(y1)
-        cv2.line(contours_mask, (x1, y1), (x2, y2), (0, 255, 0), 1)
+        lx1, ly1, lx2, ly2 = line[0]
+        if lx1 == lx2:  # vertical line
+            x_values.append(lx1)
+        if ly1 == ly2:  # horizontal line
+            y_values.append(ly1)
+        cv2.line(contours_mask, (lx1, ly1), (lx2, ly2), (0, 255, 0), 1)
 
     x, y, w, h = min(x_values), min(y_values), max(x_values) - min(x_values), max(y_values) - min(y_values)
 
@@ -185,7 +186,13 @@ print("> Looping all pages")
 start_time = time.clock()
 grabbed_cards = []
 current_class = None
-page_count = 0
+page_count = 1
+card_rarities = OrderedDict({
+    "legendary": 0,
+    "epic": 0,
+    "N/A": 0,
+    "uncommon": 0,
+    "common": 0})
 cl = ColorLabeler()
 while True:
     # Move the cursor so it does not trigger visual effects
@@ -204,25 +211,54 @@ while True:
         x2, y2 = rect[1]
         pt1 = int(round(x1 * w)), int(round(y1 * h))
         pt2 = int(round(x2 * w)), int(round(y2 * h))
-        crop_half_side = int(round(h * 0.02))
+        crop_half_side = int(round(h * 0.009))
         crop_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - crop_half_side
         crop_y = pt2[1] - crop_half_side / 4 * 3
+
+        # Find the ellipse
         rarity_image = cards_area[crop_y:crop_y + 2 * crop_half_side, crop_x:crop_x + 2 * crop_half_side]
-        blurred = cv2.GaussianBlur(rarity_image, (5, 5), 0)
-        lab = cv2.cvtColor(blurred, cv2.COLOR_BGR2LAB)
-        color = cl.label(lab)
-        print count, color
+        rarity_hsv = cv2.cvtColor(rarity_image, cv2.COLOR_BGR2HSV)
+
+        colors_hsv = OrderedDict({
+            "legendary": [(6, 150, 50), (26, 255, 255)],  # (170, 122, 45),
+            "epic": [(133, 50, 50), (153, 255, 255)],  # (136, 60, 160),
+            "uncommon": [(98, 75, 50), (118, 255, 255)],  # (52, 107, 184),
+            "common": [(97, 0, 50), (117, 75, 255)]})  # (127, 139, 152)
+
+        #cv2.imshow("hsv", rarity_hsv)
+        color = 'N/A'
+        hit_ratio = 0.0
+        for (i, (name, hsv)) in enumerate(colors_hsv.items()):
+            mask = cv2.inRange(rarity_hsv, hsv[0], hsv[1])
+            hit_ratio_new = float(cv2.countNonZero(mask)) / float(mask.size)
+            if hit_ratio_new > 0.5:
+                if hit_ratio_new > hit_ratio:
+                    hit_ratio = hit_ratio_new
+                    color = name
+            cv2.imshow(name, mask)
+
+        card_rarities[color] += 1
+        #        cv2.imshow("original", rarity_image)
+        #        cv2.waitKey(0)
+        #        sys.exit()
+
+        #        blurred = cv2.GaussianBlur(rarity_image, (5, 5), 0)
+        #        lab = cv2.cvtColor(blurred, cv2.COLOR_BGR2LAB)
+        #        color = cl.label(lab)
+        # print count, color
         # mean = cv2.mean(blurred)
         # print mean
         # cv2.imshow(str(count) + color, blurred)
-        cv2.rectangle(cards_area, (crop_x, crop_y),
-                      (crop_x + 2 * crop_half_side, crop_y + 2 * crop_half_side), (0, 255, 0))
-        cv2.putText(cards_area, color, (crop_x - 50, crop_y + 130), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), 2)
-        cv2.rectangle(cards_area, pt1, pt2, (255, 0, 255), 1)
+        # Card text
+        #cv2.rectangle(cards_area, (crop_x, crop_y),
+        #             (crop_x + 2 * crop_half_side, crop_y + 2 * crop_half_side), (0, 255, 0))
+        #cv2.putText(cards_area, color, (crop_x - 50, crop_y + 130), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), 2)
+        # Rarity gem
+        #cv2.rectangle(cards_area, pt1, pt2, (255, 0, 255), 1)
 
-    cv2.imshow("allcards", cards_area)
-    cv2.waitKey(0)
-    sys.exit()
+    #cv2.imshow("allcards", cards_area)
+    #cv2.waitKey(0)
+    #sys.exit()
 
     # ------------ here, get text areas
 
@@ -249,7 +285,7 @@ while True:
     # win32api.ClipCursor((0,0,0,0))
     time.sleep(PAGE_TURN_TIME);
     page_count += 1
-    print page_count
+    #print page_count
     #
     # # Check if we are on the last page
     new_window = screenshot_and_crop_to_card_page()
@@ -261,7 +297,8 @@ while True:
     # page_no_result = cv2.matchTemplate(last_window_page_no, next_window_page_no, eval(MATCHING_METHODS[1]))
     # (_, max_page_matching_value, _, _) = cv2.minMaxLoc(page_no_result)
     # if (max_page_matching_value > 0.999):
-    if page_count > 20:
+    if page_count > 95:
+        print card_rarities
         break
 
 end_time = time.clock()
