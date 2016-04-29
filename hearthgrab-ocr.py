@@ -43,23 +43,13 @@ CARD_POSITIONS = [
     [(0.743, 0.731), (0.947, 0.778)]]
 
 PAGE_TURN_TIME = 0.3  # 0.3
-TWO_X_SIZE = [20, 25]  # TODO: Make relative or find in other way
-CLASS_POSITION = [471, 86]  # TODO: Make relative or find in other way
-CLASS_SIZE = [170, 35]
-PAGE_NO_POSITION = [500, 750]
-PAGE_NO_SIZE = [120, 25]
 CLASS_NAMES_IN_ORDER = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior',
                         'neutral']
-CLASS_TEMPLATES = []
 
 # Determined constants
 WINDOW_RECTANGLE = []
 CARD_PAGE_RECTANGLE = []
 NEXT_PAGE_CLICK_POINT = []
-
-for class_name in CLASS_NAMES_IN_ORDER:
-    imagePath = os.getcwd() + '/resources/class_templates/' + class_name + '.png'
-    CLASS_TEMPLATES.append([class_name, cv2.cvtColor(cv2.imread(imagePath), cv2.COLOR_BGR2GRAY)])
 
 # Import csv card data
 with open('resources/card_data.csv', 'rb') as f:
@@ -95,45 +85,50 @@ def screenshot_and_crop_to_window():
     im_numpy = np.array(im)
     ((win_x, win_y), (win_w, win_h)) = WINDOW_RECTANGLE[0]
     cropped_window_image = im_numpy[win_y:win_y + win_h, win_x:win_x + win_w]  # NOTE: its img[y: y + h, x: x + w]
+    #cropped_window_image_rgb = cv2.cvtColor(cropped_window_image, cv2.COLOR_BGR2RGB)
     return cropped_window_image
 
 
 def find_card_page(cropped_window_image):
-    gray_window = cv2.cvtColor(cropped_window_image, cv2.COLOR_BGR2GRAY)
-
-    # Find card area
-    ret, thresh = cv2.threshold(gray_window, 105, 255, cv2.THRESH_BINARY)
-    _, contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    page_color_hsv = [(16, 45, 140), (28, 140, 255)]
+    page_hsv = cv2.cvtColor(cropped_window_image, cv2.COLOR_RGB2HSV)
+    mask = cv2.inRange(page_hsv, page_color_hsv[0], page_color_hsv[1])
 
     # Find the index of the largest contour
+    _, contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     areas = [cv2.contourArea(c) for c in contours]
     max_index = np.argmax(areas)
     cnt = contours[max_index]
 
-    h, w = gray_window.shape[:2]
+    h, w = cropped_window_image.shape[:2]
     contours_mask = np.zeros((h, w, 3), np.uint8)
     contours_mask = cv2.cvtColor(contours_mask, cv2.COLOR_RGB2GRAY)
     cv2.drawContours(contours_mask, [cnt], 0, (255, 255, 255))
 
-    lines = cv2.HoughLinesP(contours_mask, 8, math.pi / 2, h / 2, minLineLength=w / 2, maxLineGap=w / 2)
+    lines = cv2.HoughLinesP(contours_mask, 12, math.pi / 2, h / 2, minLineLength=h * 0.7, maxLineGap=h * 0.7)
     # print lines
 
     contours_mask = cv2.cvtColor(contours_mask, cv2.COLOR_GRAY2RGB)
     x_values = []
     y_values = []
+    count_lines = [0, 0]
     for line in lines:  #
         lx1, ly1, lx2, ly2 = line[0]
         if lx1 == lx2:  # vertical line
+            count_lines[0] += 1
             x_values.append(lx1)
         if ly1 == ly2:  # horizontal line
+            count_lines[1] += 1
             y_values.append(ly1)
         cv2.line(contours_mask, (lx1, ly1), (lx2, ly2), (0, 255, 0), 1)
 
-    x, y, w, h = min(x_values), min(y_values), max(x_values) - min(x_values), max(y_values) - min(y_values)
-
-    # cv2.# imshow("allcards", contours_mask)
+    # cv2.imshow("allcards", contours_mask)
     # cv2.waitKey(0)
     # sys.exit()
+    if count_lines[0] < 2 or count_lines[1] < 2:
+        sys.exit("Error finding card page!")
+
+    x, y, w, h = min(x_values), min(y_values), max(x_values) - min(x_values), max(y_values) - min(y_values)
 
     ((win_x, win_y), (win_w, win_h)) = WINDOW_RECTANGLE[0]
     return x + win_x, y + win_y, w, h
@@ -193,6 +188,7 @@ card_rarities = OrderedDict({
     "N/A": 0,
     "uncommon": 0,
     "common": 0})
+goldens = 0
 cl = ColorLabeler()
 while True:
     # Move the cursor so it does not trigger visual effects
@@ -200,7 +196,6 @@ while True:
 
     # Take screenshot
     cards_area = screenshot_and_crop_to_card_page()
-
     w = CARD_PAGE_RECTANGLE[2]
     h = CARD_PAGE_RECTANGLE[3]
 
@@ -212,11 +207,14 @@ while True:
         pt1 = int(round(x1 * w)), int(round(y1 * h))
         pt2 = int(round(x2 * w)), int(round(y2 * h))
         crop_half_side = int(round(h * 0.009))
-        crop_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - crop_half_side
-        crop_y = pt2[1] - crop_half_side / 4 * 3
+        crop_rarity_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - crop_half_side
+        crop_rarity_y = pt2[1] - crop_half_side / 4 * 3
+        crop_golden_x = pt1[0]
+        crop_golden_y = pt1[1] + (pt2[1] - pt2[1]) / 2 - crop_half_side
 
         # Find the ellipse
-        rarity_image = cards_area[crop_y:crop_y + 2 * crop_half_side, crop_x:crop_x + 2 * crop_half_side]
+        rarity_image = cards_area[crop_rarity_y:crop_rarity_y + 2 * crop_half_side,
+                       crop_rarity_x:crop_rarity_x + 2 * crop_half_side]
         rarity_hsv = cv2.cvtColor(rarity_image, cv2.COLOR_BGR2HSV)
 
         colors_hsv = OrderedDict({
@@ -224,8 +222,23 @@ while True:
             "epic": [(133, 50, 50), (153, 255, 255)],  # (136, 60, 160),
             "uncommon": [(98, 75, 50), (118, 255, 255)],  # (52, 107, 184),
             "common": [(97, 0, 50), (117, 75, 255)]})  # (127, 139, 152)
+        golden_color_hsv = [(9, 50, 50), (29, 255, 255)]
+                           #[(16, 45, 140), (28, 140, 255)]
 
-        #cv2.imshow("hsv", rarity_hsv)
+        golden_image = cards_area[crop_golden_y:crop_golden_y + 2 * crop_half_side,
+                       crop_golden_x:crop_golden_x + 2 * crop_half_side]
+        golden_hsv = cv2.cvtColor(golden_image, cv2.COLOR_BGR2HSV)
+
+        golden = False
+        hit_ratio = 0.0
+        mask = cv2.inRange(golden_hsv, golden_color_hsv[0], golden_color_hsv[1])
+        pixel_density = float(cv2.countNonZero(mask)) / float(mask.size)
+        print pixel_density
+        if pixel_density > 0.5:
+            golden = True
+            goldens += 1
+
+        cv2.imshow("hsv", mask)
         color = 'N/A'
         hit_ratio = 0.0
         for (i, (name, hsv)) in enumerate(colors_hsv.items()):
@@ -235,26 +248,29 @@ while True:
                 if hit_ratio_new > hit_ratio:
                     hit_ratio = hit_ratio_new
                     color = name
-            cv2.imshow(name, mask)
+                    # cv2.imshow(name, mask)
 
         card_rarities[color] += 1
         #        cv2.imshow("original", rarity_image)
         #        cv2.waitKey(0)
         #        sys.exit()
 
-        #        blurred = cv2.GaussianBlur(rarity_image, (5, 5), 0)
-        #        lab = cv2.cvtColor(blurred, cv2.COLOR_BGR2LAB)
-        #        color = cl.label(lab)
+        blurred = cv2.GaussianBlur(rarity_image, (5, 5), 0)
+        lab = cv2.cvtColor(blurred, cv2.COLOR_BGR2LAB)
+        color = cl.label(lab)
         # print count, color
         # mean = cv2.mean(blurred)
         # print mean
         # cv2.imshow(str(count) + color, blurred)
         # Card text
-        #cv2.rectangle(cards_area, (crop_x, crop_y),
-        #             (crop_x + 2 * crop_half_side, crop_y + 2 * crop_half_side), (0, 255, 0))
-        #cv2.putText(cards_area, color, (crop_x - 50, crop_y + 130), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), 2)
+        cv2.rectangle(cards_area, (crop_rarity_x, crop_rarity_y),
+                      (crop_rarity_x + 2 * crop_half_side, crop_rarity_y + 2 * crop_half_side), (0, 255, 0))
+        cv2.rectangle(cards_area, (crop_golden_x, crop_golden_y),
+                      (crop_golden_x + 2 * crop_half_side, crop_golden_y + 2 * crop_half_side), (0, 255, 0))
+        cv2.putText(cards_area, color, (crop_rarity_x - 50, crop_rarity_y + 130), cv2.FONT_HERSHEY_PLAIN, 1,
+                    (255, 0, 0), 2)
         # Rarity gem
-        #cv2.rectangle(cards_area, pt1, pt2, (255, 0, 255), 1)
+        cv2.rectangle(cards_area, pt1, pt2, (255, 0, 255), 1)
 
     #cv2.imshow("allcards", cards_area)
     #cv2.waitKey(0)
@@ -285,9 +301,10 @@ while True:
     # win32api.ClipCursor((0,0,0,0))
     time.sleep(PAGE_TURN_TIME);
     page_count += 1
-    #print page_count
+    # print page_count
     #
     # # Check if we are on the last page
+
     new_window = screenshot_and_crop_to_card_page()
     #
     # last_window_page_no = cards_area[PAGE_NO_POSITION[1]: PAGE_NO_POSITION[1] + PAGE_NO_SIZE[1],
@@ -299,12 +316,14 @@ while True:
     # if (max_page_matching_value > 0.999):
     if page_count > 95:
         print card_rarities
+        print "Golden: " + str(goldens)
         break
 
 end_time = time.clock()
 print("Collected all cards in %.2f seconds." % (end_time - start_time))
 print("Scanned " + str(page_count) + " pages.")
 
+sys.exit()
 # Save all found cards
 print("> Saving all found cards")
 start_time = time.clock()
@@ -403,8 +422,8 @@ print("> Saving card data to hearthgrab.txt")
 with open('hearthgrab.txt', 'w') as outfile:
     json.dump(matched_cards, outfile)
 
-print "blanks:"
-print number_of_blanks
+# print "blanks:"
+# print number_of_blanks
 if (len(failed_cards) > 0):
     print "failed:"
     print failed_cards

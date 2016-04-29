@@ -56,5 +56,4 @@ class ColorLabeler:
         # return the name of the color with the smallest distance
         if mindist[0] > 80:
             return "N/A"
-        print mindist[0]
         return self.colorNames[mindist[1]]
