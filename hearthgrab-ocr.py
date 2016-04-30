@@ -85,17 +85,17 @@ def screenshot_and_crop_to_window():
     im_numpy = np.array(im)
     ((win_x, win_y), (win_w, win_h)) = WINDOW_RECTANGLE[0]
     cropped_window_image = im_numpy[win_y:win_y + win_h, win_x:win_x + win_w]  # NOTE: its img[y: y + h, x: x + w]
-    #cropped_window_image_rgb = cv2.cvtColor(cropped_window_image, cv2.COLOR_BGR2RGB)
+    # cropped_window_image_rgb = cv2.cvtColor(cropped_window_image, cv2.COLOR_BGR2RGB)
     return cropped_window_image
 
 
 def find_card_page(cropped_window_image):
     page_color_hsv = [(16, 45, 140), (28, 140, 255)]
     page_hsv = cv2.cvtColor(cropped_window_image, cv2.COLOR_RGB2HSV)
-    mask = cv2.inRange(page_hsv, page_color_hsv[0], page_color_hsv[1])
+    page_mask = cv2.inRange(page_hsv, page_color_hsv[0], page_color_hsv[1])
 
     # Find the index of the largest contour
-    _, contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    _, contours, _ = cv2.findContours(page_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     areas = [cv2.contourArea(c) for c in contours]
     max_index = np.argmax(areas)
     cnt = contours[max_index]
@@ -168,8 +168,8 @@ CARD_PAGE_RECTANGLE = find_card_page(screenshot_and_crop_to_window())
 def screenshot_and_crop_to_card_page():
     im = ImageGrab.grab()
     im_numpy = np.array(im)
-    x, y, w, h = CARD_PAGE_RECTANGLE
-    cropped_card_page_image = im_numpy[y:y + h, x:x + w]  # NOTE: its img[y: y + h, x: x + w]
+    crop_x, crop_y, crop_w, crop_h = CARD_PAGE_RECTANGLE
+    cropped_card_page_image = im_numpy[crop_y:crop_y + crop_h, crop_x:crop_x + crop_w]  # NOTE: its img[y: y + h, x: x + w]
     crop_cards = cv2.cvtColor(cropped_card_page_image, cv2.COLOR_BGR2RGB)
 
     return crop_cards
@@ -210,7 +210,9 @@ while True:
         crop_rarity_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - crop_half_side
         crop_rarity_y = pt2[1] - crop_half_side / 4 * 3
         crop_golden_x = pt1[0]
-        crop_golden_y = pt1[1] + (pt2[1] - pt2[1]) / 2 - crop_half_side
+        crop_golden_y = pt1[1] + (pt2[1] - pt2[1]) / 2 - crop_half_side - int(round((pt2[1] - pt1[1]) * 1.5))
+        crop_x2_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - crop_half_side
+        crop_x2_y = pt2[1] - crop_half_side / 4 * 3
 
         # Find the ellipse
         rarity_image = cards_area[crop_rarity_y:crop_rarity_y + 2 * crop_half_side,
@@ -222,59 +224,80 @@ while True:
             "epic": [(133, 50, 50), (153, 255, 255)],  # (136, 60, 160),
             "uncommon": [(98, 75, 50), (118, 255, 255)],  # (52, 107, 184),
             "common": [(97, 0, 50), (117, 75, 255)]})  # (127, 139, 152)
-        golden_color_hsv = [(9, 50, 50), (29, 255, 255)]
-                           #[(16, 45, 140), (28, 140, 255)]
+        golden_color_hsv = [(19, 129, 132), (25, 180, 255)]
+        x2_color_hsv = [(19, 113, 97), (20, 159, 203)]
+        # 19, 159, 109
+        # 20, 143, 159
+        # 19, 155, 97
+        # 20, 113, 203
 
+        # ------ DETECT GOLDENS -------
         golden_image = cards_area[crop_golden_y:crop_golden_y + 2 * crop_half_side,
                        crop_golden_x:crop_golden_x + 2 * crop_half_side]
         golden_hsv = cv2.cvtColor(golden_image, cv2.COLOR_BGR2HSV)
 
         golden = False
         hit_ratio = 0.0
-        mask = cv2.inRange(golden_hsv, golden_color_hsv[0], golden_color_hsv[1])
-        pixel_density = float(cv2.countNonZero(mask)) / float(mask.size)
-        print pixel_density
-        if pixel_density > 0.5:
+        golden_mask = cv2.inRange(golden_hsv, golden_color_hsv[0], golden_color_hsv[1])
+        pixel_density = float(cv2.countNonZero(golden_mask)) / float(golden_mask.size)
+        if pixel_density > 0.3:
             golden = True
             goldens += 1
 
-        cv2.imshow("hsv", mask)
+        # ------ DETECT 2X -------
+        x2_image = cards_area[crop_x2_y:crop_x2_y + 2 * crop_half_side,
+                   crop_x2_x:crop_x2_x + 2 * crop_half_side]
+        x2_hsv = cv2.cvtColor(x2_image, cv2.COLOR_BGR2HSV)
+
+        x2 = False
+        hit_ratio = 0.0
+        x2_mask = cv2.inRange(x2_hsv, x2_color_hsv[0], x2_color_hsv[1])
+        pixel_density = float(cv2.countNonZero(x2_mask)) / float(x2_mask.size)
+        cv2.imshow("hsv" + str(count), x2_image)
+        print pixel_density
+        if pixel_density > 0.3:
+            x2 = True
+
+        # ------ DETECT RARITY -------
+        # cv2.imshow("hsv" + str(count), mask)
         color = 'N/A'
         hit_ratio = 0.0
         for (i, (name, hsv)) in enumerate(colors_hsv.items()):
-            mask = cv2.inRange(rarity_hsv, hsv[0], hsv[1])
-            hit_ratio_new = float(cv2.countNonZero(mask)) / float(mask.size)
+            rarity_mask = cv2.inRange(rarity_hsv, hsv[0], hsv[1])
+            hit_ratio_new = float(cv2.countNonZero(rarity_mask)) / float(rarity_mask.size)
             if hit_ratio_new > 0.5:
                 if hit_ratio_new > hit_ratio:
                     hit_ratio = hit_ratio_new
                     color = name
-                    # cv2.imshow(name, mask)
+                    # cv2.imshow(name + str(count), mask)
+        # print hit_ratio
 
         card_rarities[color] += 1
         #        cv2.imshow("original", rarity_image)
         #        cv2.waitKey(0)
         #        sys.exit()
 
-        blurred = cv2.GaussianBlur(rarity_image, (5, 5), 0)
-        lab = cv2.cvtColor(blurred, cv2.COLOR_BGR2LAB)
-        color = cl.label(lab)
-        # print count, color
-        # mean = cv2.mean(blurred)
-        # print mean
-        # cv2.imshow(str(count) + color, blurred)
         # Card text
         cv2.rectangle(cards_area, (crop_rarity_x, crop_rarity_y),
                       (crop_rarity_x + 2 * crop_half_side, crop_rarity_y + 2 * crop_half_side), (0, 255, 0))
         cv2.rectangle(cards_area, (crop_golden_x, crop_golden_y),
                       (crop_golden_x + 2 * crop_half_side, crop_golden_y + 2 * crop_half_side), (0, 255, 0))
-        cv2.putText(cards_area, color, (crop_rarity_x - 50, crop_rarity_y + 130), cv2.FONT_HERSHEY_PLAIN, 1,
+        cv2.rectangle(cards_area, (crop_x2_x, crop_x2_y),
+                      (crop_x2_x + 2 * crop_half_side, crop_x2_y + 2 * crop_half_side), (0, 255, 0))
+        cv2.putText(cards_area, color, (crop_rarity_x - 50, crop_rarity_y - 200), cv2.FONT_HERSHEY_PLAIN, 1,
                     (255, 0, 0), 2)
+        if golden:
+            cv2.putText(cards_area, "golden", (crop_rarity_x - 50, crop_rarity_y - 185), cv2.FONT_HERSHEY_PLAIN, 1,
+                        (255, 0, 0), 2)
+        if x2:
+            cv2.putText(cards_area, "2X", (crop_rarity_x - 50, crop_rarity_y - 170), cv2.FONT_HERSHEY_PLAIN, 1,
+                        (255, 0, 0), 2)
         # Rarity gem
         cv2.rectangle(cards_area, pt1, pt2, (255, 0, 255), 1)
 
-    #cv2.imshow("allcards", cards_area)
-    #cv2.waitKey(0)
-    #sys.exit()
+    cv2.imshow("allcards", cards_area)
+    cv2.waitKey(0)
+    sys.exit()
 
     # ------------ here, get text areas
 
@@ -314,7 +337,7 @@ while True:
     # page_no_result = cv2.matchTemplate(last_window_page_no, next_window_page_no, eval(MATCHING_METHODS[1]))
     # (_, max_page_matching_value, _, _) = cv2.minMaxLoc(page_no_result)
     # if (max_page_matching_value > 0.999):
-    if page_count > 95:
+    if page_count > 1:
         print card_rarities
         print "Golden: " + str(goldens)
         break
