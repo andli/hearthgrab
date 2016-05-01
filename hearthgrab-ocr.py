@@ -33,14 +33,14 @@ MATCHING_METHODS = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR', 'cv
 PROGRESS_BAR_LENGTH = 20
 
 CARD_POSITIONS = [
-    [(0.032, 0.295), (0.235, 0.342)],
-    [(0.269, 0.295), (0.472, 0.342)],
-    [(0.507, 0.295), (0.710, 0.342)],
-    [(0.743, 0.295), (0.947, 0.342)],
-    [(0.032, 0.731), (0.235, 0.778)],
-    [(0.269, 0.731), (0.472, 0.778)],
-    [(0.507, 0.731), (0.710, 0.778)],
-    [(0.743, 0.731), (0.947, 0.778)]]
+    [(0.028, 0.295), (0.231, 0.342)],
+    [(0.266, 0.295), (0.469, 0.342)],
+    [(0.504, 0.295), (0.707, 0.342)],
+    [(0.740, 0.295), (0.946, 0.342)],
+    [(0.028, 0.731), (0.231, 0.778)],
+    [(0.266, 0.731), (0.469, 0.778)],
+    [(0.504, 0.731), (0.707, 0.778)],
+    [(0.740, 0.731), (0.946, 0.778)]]
 
 PAGE_TURN_TIME = 0.3  # 0.3
 CLASS_NAMES_IN_ORDER = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior',
@@ -169,7 +169,8 @@ def screenshot_and_crop_to_card_page():
     im = ImageGrab.grab()
     im_numpy = np.array(im)
     crop_x, crop_y, crop_w, crop_h = CARD_PAGE_RECTANGLE
-    cropped_card_page_image = im_numpy[crop_y:crop_y + crop_h, crop_x:crop_x + crop_w]  # NOTE: its img[y: y + h, x: x + w]
+    cropped_card_page_image = im_numpy[crop_y:crop_y + crop_h,
+                              crop_x:crop_x + crop_w]  # NOTE: its img[y: y + h, x: x + w]
     crop_cards = cv2.cvtColor(cropped_card_page_image, cv2.COLOR_BGR2RGB)
 
     return crop_cards
@@ -209,10 +210,10 @@ while True:
         crop_half_side = int(round(h * 0.009))
         crop_rarity_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - crop_half_side
         crop_rarity_y = pt2[1] - crop_half_side / 4 * 3
-        crop_golden_x = pt1[0]
+        crop_golden_x = pt1[0] + crop_half_side / 2
         crop_golden_y = pt1[1] + (pt2[1] - pt2[1]) / 2 - crop_half_side - int(round((pt2[1] - pt1[1]) * 1.5))
-        crop_x2_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - crop_half_side
-        crop_x2_y = pt2[1] - crop_half_side / 4 * 3
+        crop_x2_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - int(round(4.5 * crop_half_side))
+        crop_x2_y = pt2[1] + (pt2[1] - pt1[1]) * 3
 
         # Find the ellipse
         rarity_image = cards_area[crop_rarity_y:crop_rarity_y + 2 * crop_half_side,
@@ -224,8 +225,8 @@ while True:
             "epic": [(133, 50, 50), (153, 255, 255)],  # (136, 60, 160),
             "uncommon": [(98, 75, 50), (118, 255, 255)],  # (52, 107, 184),
             "common": [(97, 0, 50), (117, 75, 255)]})  # (127, 139, 152)
-        golden_color_hsv = [(19, 129, 132), (25, 180, 255)]
-        x2_color_hsv = [(19, 113, 97), (20, 159, 203)]
+        golden_color_hsv = [(15, 129, 132), (25, 180, 255)]
+        x2_color_hsv = [(18, 110, 95), (22, 165, 210)]
         # 19, 159, 109
         # 20, 143, 159
         # 19, 155, 97
@@ -239,7 +240,9 @@ while True:
         golden = False
         hit_ratio = 0.0
         golden_mask = cv2.inRange(golden_hsv, golden_color_hsv[0], golden_color_hsv[1])
+        # cv2.imshow("mask" + str(count), golden_mask)
         pixel_density = float(cv2.countNonZero(golden_mask)) / float(golden_mask.size)
+        # print pixel_density
         if pixel_density > 0.3:
             golden = True
             goldens += 1
@@ -253,8 +256,9 @@ while True:
         hit_ratio = 0.0
         x2_mask = cv2.inRange(x2_hsv, x2_color_hsv[0], x2_color_hsv[1])
         pixel_density = float(cv2.countNonZero(x2_mask)) / float(x2_mask.size)
-        cv2.imshow("hsv" + str(count), x2_image)
-        print pixel_density
+        # cv2.imshow("hsv" + str(count), x2_hsv)
+        # cv2.imshow("mask" + str(count), x2_mask)
+        # print pixel_density
         if pixel_density > 0.3:
             x2 = True
 
@@ -278,12 +282,12 @@ while True:
         #        sys.exit()
 
         # Card text
-        cv2.rectangle(cards_area, (crop_rarity_x, crop_rarity_y),
-                      (crop_rarity_x + 2 * crop_half_side, crop_rarity_y + 2 * crop_half_side), (0, 255, 0))
-        cv2.rectangle(cards_area, (crop_golden_x, crop_golden_y),
-                      (crop_golden_x + 2 * crop_half_side, crop_golden_y + 2 * crop_half_side), (0, 255, 0))
-        cv2.rectangle(cards_area, (crop_x2_x, crop_x2_y),
-                      (crop_x2_x + 2 * crop_half_side, crop_x2_y + 2 * crop_half_side), (0, 255, 0))
+        # cv2.rectangle(cards_area, (crop_rarity_x, crop_rarity_y),
+        #              (crop_rarity_x + 2 * crop_half_side, crop_rarity_y + 2 * crop_half_side), (0, 255, 0))
+        # cv2.rectangle(cards_area, (crop_golden_x, crop_golden_y),
+        #              (crop_golden_x + 2 * crop_half_side, crop_golden_y + 2 * crop_half_side), (0, 255, 0))
+        # cv2.rectangle(cards_area, (crop_x2_x, crop_x2_y),
+        #              (crop_x2_x + 2 * crop_half_side, crop_x2_y + 2 * crop_half_side), (0, 255, 0))
         cv2.putText(cards_area, color, (crop_rarity_x - 50, crop_rarity_y - 200), cv2.FONT_HERSHEY_PLAIN, 1,
                     (255, 0, 0), 2)
         if golden:
@@ -293,9 +297,9 @@ while True:
             cv2.putText(cards_area, "2X", (crop_rarity_x - 50, crop_rarity_y - 170), cv2.FONT_HERSHEY_PLAIN, 1,
                         (255, 0, 0), 2)
         # Rarity gem
-        cv2.rectangle(cards_area, pt1, pt2, (255, 0, 255), 1)
+        # cv2.rectangle(cards_area, pt1, pt2, (255, 0, 255), 1)
 
-    cv2.imshow("allcards", cards_area)
+    cv2.imshow(str(page_count) + "allcards", cards_area)
     cv2.waitKey(0)
     sys.exit()
 
@@ -340,6 +344,8 @@ while True:
     if page_count > 1:
         print card_rarities
         print "Golden: " + str(goldens)
+        cv2.waitKey(0)
+        sys.exit()
         break
 
 end_time = time.clock()
