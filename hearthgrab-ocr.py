@@ -19,6 +19,12 @@ from PIL import ImageGrab
 
 from colorlabeler import ColorLabeler
 
+DEBUG_ENABLED = False
+PAGE_TURN_TIME = 0.25  # 0.3
+THRESHOLD_RARITY = 0.28
+THRESHOLD_GOLDEN = 0.10
+THRESHOLD_X2 = 0.4
+
 
 def update_progress(progress, counter):
     sys.stdout.write("\r[{0}{1}] {2}% ({3})".format('#' * (int(math.ceil(progress * PROGRESS_BAR_LENGTH))),
@@ -42,7 +48,6 @@ CARD_POSITIONS = [
     [(0.504, 0.731), (0.707, 0.778)],
     [(0.740, 0.731), (0.946, 0.778)]]
 
-PAGE_TURN_TIME = 0.3  # 0.3
 CLASS_NAMES_IN_ORDER = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior',
                         'neutral']
 
@@ -194,22 +199,22 @@ cl = ColorLabeler()
 
 
 def find_minmax_hsv(golden_im):
-    global h
+    global page_height
     hmax, smax, vmax = 0, 0, 0
     hmin, smin, vmin = 255, 255, 255
     for pixelrow in golden_im:
         for pixel in pixelrow:
             b, g, r = pixel
             val = cv2.cvtColor(np.uint8([[[b, g, r]]]), cv2.COLOR_BGR2HSV)
-            h, s, v = val[0][0]
-            if h > hmax:
-                hmax = h
+            page_height, s, v = val[0][0]
+            if page_height > hmax:
+                hmax = page_height
             if s > smax:
                 smax = s
             if v > vmax:
                 vmax = v
-            if h < hmin:
-                hmin = h
+            if page_height < hmin:
+                hmin = page_height
             if s < smin:
                 smin = s
             if v < vmin:
@@ -220,69 +225,85 @@ def find_minmax_hsv(golden_im):
     print hmin, smin, vmin
 
 
-top_fail_rarity = [0.0, 0, 0]
-top_fail_x2 = [0.0, 0, 0]
-top_fail_golden = [0.0, 0, 0]
+top_fail_rarity = [0.0, 0, 0, '']
+top_fail_x2 = [0.0, 0, 0, '']
+top_fail_golden = [0.0, 0, 0, '']
+# Move the cursor so it does not trigger visual effects
+win32api.SetCursorPos((NEXT_PAGE_CLICK_POINT[0], NEXT_PAGE_CLICK_POINT[1]))
+time.sleep(PAGE_TURN_TIME);
+
 while True:
     # Move the cursor so it does not trigger visual effects
     win32api.SetCursorPos((NEXT_PAGE_CLICK_POINT[0], NEXT_PAGE_CLICK_POINT[1]))
-
     # Take screenshot
     cards_area = screenshot_and_crop_to_card_page()
-    w = CARD_PAGE_RECTANGLE[2]
-    h = CARD_PAGE_RECTANGLE[3]
+    page_width = CARD_PAGE_RECTANGLE[2]
+    page_height = CARD_PAGE_RECTANGLE[3]
 
     card_position = 0
     for rect in CARD_POSITIONS:
         card_position += 1
         x1, y1 = rect[0]
         x2, y2 = rect[1]
-        pt1 = int(round(x1 * w)), int(round(y1 * h))
-        pt2 = int(round(x2 * w)), int(round(y2 * h))
-        crop_half_side = int(round(h * 0.009))
-        crop_rarity_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - crop_half_side
-        crop_rarity_y = pt2[1] - crop_half_side / 4 * 3
-        crop_golden_x = pt1[0] + crop_half_side / 2
-        # crop_golden_y = pt1[1] + (pt2[1] - pt2[1]) / 2 - crop_half_side - int(round((pt2[1] - pt1[1]) * 1.2))
+        pt1 = int(round(x1 * page_width)), int(round(y1 * page_height))
+        pt2 = int(round(x2 * page_width)), int(round(y2 * page_height))
+        crop_half_side = int(round(page_height * 0.012))
+        crop_rarity_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - int(round(crop_half_side / 2))
+        crop_rarity_y = pt2[1] + int(round(crop_half_side * 0.2))
+        crop_golden_x = pt2[0] - crop_half_side * 2
         crop_golden_y = pt1[1] + (pt2[1] - pt2[1]) / 2 + int(round((pt2[1] - pt1[1]) * 1.0))
-        crop_x2_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - int(round(4.5 * crop_half_side))
-        crop_x2_y = pt2[1] + (pt2[1] - pt1[1]) * 3
+        crop_x2_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - int(round(3.6 * crop_half_side))
+        crop_x2_y = int(round(pt2[1] + (pt2[1] - pt1[1]) * 3.2))
 
-        # Find the ellipse
-        rarity_image = cards_area[crop_rarity_y:crop_rarity_y + 2 * crop_half_side,
-                       crop_rarity_x:crop_rarity_x + 2 * crop_half_side]
-        rarity_hsv = cv2.cvtColor(rarity_image, cv2.COLOR_BGR2HSV)
+        text_color_hsv = [(0, 0, 87), (31, 15, 255)]
+        card_text_image = cards_area[pt1[1]:pt1[1] + (pt2[1] - pt1[1]), pt1[0]:pt1[0] + (pt2[0] - pt1[0])]
+        card_text_image_hsv = cv2.cvtColor(card_text_image, cv2.COLOR_BGR2HSV)
+        card_text_mask = cv2.inRange(card_text_image_hsv, text_color_hsv[0], text_color_hsv[1])
 
-        colors_hsv = OrderedDict({
+        card_text_mask_copy = np.copy(card_text_mask)
+        _, contours, _ = cv2.findContours(card_text_mask_copy, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        areas = [cv2.contourArea(c) for c in contours]
+        valid_contours = []
+        for cnt_index in range(0, len(contours) - 1):
+            if areas[cnt_index] > 3:
+                valid_contours.append(contours[cnt_index])
+
+        mask = np.zeros(card_text_mask.shape, np.uint8)
+        for h, cnt in enumerate(valid_contours):
+            cv2.drawContours(mask, [cnt], 0, 255, -1)
+        card_text_mask = cv2.bitwise_and(card_text_mask, card_text_mask, mask=mask)
+
+        #card_text_mask_r = cv2.resize(card_text_mask, (0, 0), fx=8, fy=8)
+        #cv2.imshow(str(card_position), card_text_mask_r)
+
+        rarity_colors_hsv = OrderedDict({
             "legendary": [(6, 150, 50), (26, 255, 255)],  # (170, 122, 45),
             "epic": [(133, 50, 50), (153, 255, 255)],  # (136, 60, 160),
             "uncommon": [(98, 75, 50), (118, 255, 255)],  # (52, 107, 184),
-            "common": [(97, 0, 50), (117, 75, 255)]})  # (127, 139, 152)
-        golden_color_hsv = [(18, 120, 176), (23, 255, 255)]
-        # golden_color_hsv = [(17, 120, 176), (22, 255, 255)]
-        # golden_color_hsv = [(13, 150, 121), (29, 210, 255)]
+            "common": [(98, 0, 50), (117, 75, 255)]})  # (127, 139, 152)
+        golden_color_hsv = [(17, 110, 198), (25, 255, 255)]
         x2_color_hsv = [(18, 110, 95), (22, 165, 210)]
 
         # ------ DETECT GOLDENS -------
-        golden_image = cards_area[crop_golden_y:crop_golden_y + 2 * crop_half_side,
+        golden_image = cards_area[crop_golden_y:crop_golden_y + 6 * crop_half_side,
                        crop_golden_x:crop_golden_x + 2 * crop_half_side]
         golden_hsv = cv2.cvtColor(golden_image, cv2.COLOR_BGR2HSV)
 
         golden = False
         golden_mask = cv2.inRange(golden_hsv, golden_color_hsv[0], golden_color_hsv[1])
-        # cv2.imshow("mask" + str(card_position), golden_mask)
         pixel_density = float(cv2.countNonZero(golden_mask)) / float(golden_mask.size)
-        if pixel_density > 0.10:
+        # if DEBUG_ENABLED:
+        # cv2.imshow("mask" + str(card_position), golden_mask)
+        # print pixel_density
+        if pixel_density > THRESHOLD_GOLDEN:
             golden = True
             goldens += 1
-            # print page_count, card_position, pixel_density
-            # elif pixel_density > 0.07:
-            # print "fail: ", str(page_count), str(card_position), str(pixel_density)
         else:
             if pixel_density > top_fail_golden[0]:
                 top_fail_golden[0] = pixel_density
                 top_fail_golden[1] = page_count
                 top_fail_golden[2] = card_position
+        top_fail_golden[3] = golden
 
         # ------ DETECT 2X -------
         x2_image = cards_area[crop_x2_y:crop_x2_y + 2 * crop_half_side,
@@ -295,22 +316,29 @@ while True:
         # cv2.imshow("hsv" + str(count), x2_hsv)
         # cv2.imshow("mask" + str(count), x2_mask)
         # print pixel_density
-        if pixel_density > 0.4:
+        if pixel_density > THRESHOLD_X2:
             x2 = True
         else:
             if pixel_density > top_fail_x2[0]:
                 top_fail_x2[0] = pixel_density
                 top_fail_x2[1] = page_count
                 top_fail_x2[2] = card_position
+        top_fail_x2[3] = x2
 
         # ------ DETECT RARITY -------
+        rarity_image = cards_area[crop_rarity_y:crop_rarity_y + 2 * crop_half_side,
+                       crop_rarity_x:crop_rarity_x + 2 * crop_half_side]
+        rarity_hsv = cv2.cvtColor(rarity_image, cv2.COLOR_BGR2HSV)
         # cv2.imshow("hsv" + str(count), mask)
         color = 'N/A'
         pixel_density = 0.0
-        for (i, (name, hsv)) in enumerate(colors_hsv.items()):
+        for (i, (name, hsv)) in enumerate(rarity_colors_hsv.items()):
             rarity_mask = cv2.inRange(rarity_hsv, hsv[0], hsv[1])
             pixel_density_new = float(cv2.countNonZero(rarity_mask)) / float(rarity_mask.size)
-            if pixel_density_new > 0.40:
+            if DEBUG_ENABLED:
+                print card_position, ": ", pixel_density_new
+                cv2.imshow("mask" + str(card_position), rarity_mask)
+            if pixel_density_new > THRESHOLD_RARITY:
                 if pixel_density_new > pixel_density:
                     pixel_density = pixel_density_new
                     color = name
@@ -319,17 +347,22 @@ while True:
                     top_fail_rarity[0] = pixel_density_new
                     top_fail_rarity[1] = page_count
                     top_fail_rarity[2] = card_position
+        top_fail_rarity[3] = color
+        if pixel_density - THRESHOLD_RARITY < 0.05 and pixel_density != 0.0:
+            print page_count, card_position, ": ", pixel_density, color
 
         card_rarities[color] += 1
-        #        cv2.imshow("original", rarity_image)
-        #        cv2.waitKey(0)
-        #        sys.exit()
+        # if DEBUG_ENABLED:
+        #     cv2.imshow("original", rarity_image)
+        #     cv2.waitKey(0)
+        #     sys.exit()
 
         # Card text
+        cv2.rectangle(cards_area, (pt1[0], pt1[1]), (pt2[0], pt2[1]), (255, 255, 0))
         cv2.rectangle(cards_area, (crop_rarity_x, crop_rarity_y),
                       (crop_rarity_x + 2 * crop_half_side, crop_rarity_y + 2 * crop_half_side), (0, 255, 0))
         cv2.rectangle(cards_area, (crop_golden_x, crop_golden_y),
-                      (crop_golden_x + 2 * crop_half_side, crop_golden_y + 2 * crop_half_side), (0, 255, 0))
+                      (crop_golden_x + 2 * crop_half_side, crop_golden_y + 6 * crop_half_side), (0, 255, 0))
         cv2.rectangle(cards_area, (crop_x2_x, crop_x2_y),
                       (crop_x2_x + 2 * crop_half_side, crop_x2_y + 2 * crop_half_side), (0, 255, 0))
         cv2.putText(cards_area, color, (crop_rarity_x - 50, crop_rarity_y - 190), cv2.FONT_HERSHEY_PLAIN, 1,
@@ -340,62 +373,37 @@ while True:
         if x2:
             cv2.putText(cards_area, "2X", (crop_rarity_x - 50, crop_rarity_y - 160), cv2.FONT_HERSHEY_PLAIN, 1,
                         (255, 0, 0), 2)
-            # Rarity gem
-            # cv2.rectangle(cards_area, pt1, pt2, (255, 0, 255), 1)
 
-    # cv2.imshow(str(page_count) + "allcards", cards_area)
-    # cv2.waitKey(0)
-    # sys.exit()
-    #
-    # ------------ here, get text areas
+            # cv2.imshow(str(page_count) + "allcards", card_text_mask)
+    cv2.waitKey(0)
+    sys.exit()
 
-    # # Find the cards on each page
-    # count = 0
-    # for card_position in CARD_POSITIONS:
-    #     # card_image = gray_window[card_position[1]:card_position[1]+CARD_SIZE[1],card_position[0]:card_position[0]+CARD_SIZE[0]]
-    #     card_image = cards_area[card_position[1] + 110:card_position[1] + 110 + 40,
-    #                  card_position[0]:card_position[0] + CARD_SIZE[0]]
-    #     # cv2.imshow(str(count), card_image)
-    #     x2_image = cards_area[card_position[1] + CARD_SIZE[1]: card_position[1] + CARD_SIZE[1] + TWO_X_SIZE[1], \
-    #                card_position[0] + CARD_SIZE[0] / 2 - TWO_X_SIZE[0]: card_position[0] + CARD_SIZE[0] / 2 +
-    #                                                                     TWO_X_SIZE[0]]
-    #     count += 1
-    #     # cv2.rectangle(gray_window, (CLASS_POSITION[0], CLASS_POSITION[1]), (CLASS_POSITION[0] + CLASS_SIZE[0], CLASS_POSITION[1] + CLASS_SIZE[1]), (0, 0, 255), 1)
-    #     grabbed_cards.append([card_image, x2_image, current_class])
-    # # cv2.imshow("allcards", card_image)
-    # # cv2.waitKey(0)
-    # # sys.exit()
-    #
+    # Click to the next page
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN | win32con.MOUSEEVENTF_ABSOLUTE, 0, 0)
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP | win32con.MOUSEEVENTF_ABSOLUTE, 0, 0)
+    # win32api.ClipCursor((0,0,0,0))
+    time.sleep(PAGE_TURN_TIME);
+    new_page = screenshot_and_crop_to_card_page()
 
-    # print page_count
-    #
-    # #
-    #
-    # last_window_page_no = cards_area[PAGE_NO_POSITION[1]: PAGE_NO_POSITION[1] + PAGE_NO_SIZE[1],
-    #                       PAGE_NO_POSITION[0]: PAGE_NO_POSITION[0] + PAGE_NO_SIZE[0]]
-    # next_window_page_no = new_window[PAGE_NO_POSITION[1]: PAGE_NO_POSITION[1] + PAGE_NO_SIZE[1],
-    #                       PAGE_NO_POSITION[0]: PAGE_NO_POSITION[0] + PAGE_NO_SIZE[0]]
-    # page_no_result = cv2.matchTemplate(last_window_page_no, next_window_page_no, eval(MATCHING_METHODS[1]))
-    # (_, max_page_matching_value, _, _) = cv2.minMaxLoc(page_no_result)
-    # if (max_page_matching_value > 0.999):
-    if page_count == 95:
+    # Check if we are on the last page
+    page_no_width = int(round(page_width / 16))
+    page_no_height = int(round(page_height / 30))
+    page_no_x = int(round(page_width / 2 - page_no_width / 2))
+    page_no_y = int(round(page_height - page_no_height))
+    last_window_page_no = cards_area[page_no_y: page_no_y + page_no_height, page_no_x: page_no_x + page_no_width]
+    next_window_page_no = new_page[page_no_y: page_no_y + page_no_height, page_no_x: page_no_x + page_no_width]
+    page_no_result = cv2.matchTemplate(last_window_page_no, next_window_page_no, eval(MATCHING_METHODS[1]))
+    (_, max_page_matching_value, _, _) = cv2.minMaxLoc(page_no_result)
+
+    if max_page_matching_value > 0.999:
         print card_rarities
         print "Goldens: " + str(goldens)
-        print "Top fail golden (0.1): " + str(top_fail_golden)
-        print "Top fail x2 (0.40): " + str(top_fail_x2)
-        print "Top fail rarity (0.40): " + str(top_fail_rarity)
-        # cv2.waitKey(0)
-        # sys.exit()
+        print "Top fail golden (" + str(THRESHOLD_GOLDEN) + "): " + str(top_fail_golden)
+        print "Top fail x2 (" + str(THRESHOLD_X2) + "): " + str(top_fail_x2)
+        print "Top fail rarity (" + str(THRESHOLD_RARITY) + "): " + str(top_fail_rarity)
         break
     else:
-        # Click to the next page
-        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN | win32con.MOUSEEVENTF_ABSOLUTE, 0, 0)
-        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP | win32con.MOUSEEVENTF_ABSOLUTE, 0, 0)
-        # win32api.ClipCursor((0,0,0,0))
-        time.sleep(PAGE_TURN_TIME);
         page_count += 1
-        # Check if we are on the last page
-        new_window = screenshot_and_crop_to_card_page()
 
 end_time = time.clock()
 print("Collected all cards in %.2f seconds." % (end_time - start_time))
