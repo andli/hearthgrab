@@ -20,10 +20,10 @@ from PIL import ImageGrab
 from colorlabeler import ColorLabeler
 
 DEBUG_ENABLED = False
-PAGE_TURN_TIME = 0.25  # 0.3
+PAGE_TURN_TIME = 0.4  # 0.3
 THRESHOLD_RARITY = 0.28
 THRESHOLD_GOLDEN = 0.10
-THRESHOLD_X2 = 0.4
+THRESHOLD_X2 = 0.35
 
 
 def update_progress(progress, counter):
@@ -95,7 +95,8 @@ def screenshot_and_crop_to_window():
 
 
 def find_card_page(cropped_window_image):
-    page_color_hsv = [(16, 45, 140), (28, 140, 255)]
+    page_color_hsv = [(14, 80, 80), (16, 150, 255)]     # dark background
+    #page_color_hsv = [(16, 45, 140), (28, 140, 255)]   # light background
     page_hsv = cv2.cvtColor(cropped_window_image, cv2.COLOR_RGB2HSV)
     page_mask = cv2.inRange(page_hsv, page_color_hsv[0], page_color_hsv[1])
 
@@ -109,6 +110,10 @@ def find_card_page(cropped_window_image):
     contours_mask = np.zeros((h, w, 3), np.uint8)
     contours_mask = cv2.cvtColor(contours_mask, cv2.COLOR_RGB2GRAY)
     cv2.drawContours(contours_mask, [cnt], 0, (255, 255, 255))
+
+    #cv2.imshow("allcards", contours_mask)
+    #cv2.waitKey(0)
+    #sys.exit()
 
     lines = cv2.HoughLinesP(contours_mask, 12, math.pi / 2, h / 2, minLineLength=h * 0.7, maxLineGap=h * 0.7)
     # print lines
@@ -127,11 +132,12 @@ def find_card_page(cropped_window_image):
             y_values.append(ly1)
         cv2.line(contours_mask, (lx1, ly1), (lx2, ly2), (0, 255, 0), 1)
 
-    # cv2.imshow("allcards", contours_mask)
-    # cv2.waitKey(0)
-    # sys.exit()
     if count_lines[0] < 2 or count_lines[1] < 2:
         sys.exit("Error finding card page!")
+
+    #cv2.imshow("allcards", contours_mask)
+    #cv2.waitKey(0)
+    #sys.exit()
 
     x, y, w, h = min(x_values), min(y_values), max(x_values) - min(x_values), max(y_values) - min(y_values)
 
@@ -249,7 +255,7 @@ while True:
         pt2 = int(round(x2 * page_width)), int(round(y2 * page_height))
         crop_half_side = int(round(page_height * 0.012))
         crop_rarity_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - int(round(crop_half_side / 2))
-        crop_rarity_y = pt2[1] + int(round(crop_half_side * 0.2))
+        crop_rarity_y = pt2[1] + int(round(crop_half_side * - 0.2))
         crop_golden_x = pt2[0] - crop_half_side * 2
         crop_golden_y = pt1[1] + (pt2[1] - pt2[1]) / 2 + int(round((pt2[1] - pt1[1]) * 1.0))
         crop_x2_x = pt1[0] + (pt2[0] - pt1[0]) / 2 - int(round(3.6 * crop_half_side))
@@ -277,12 +283,35 @@ while True:
         #cv2.imshow(str(card_position), card_text_mask_r)
 
         rarity_colors_hsv = OrderedDict({
-            "legendary": [(6, 150, 50), (26, 255, 255)],  # (170, 122, 45),
+            "legendary": [(6, 150, 50), (18, 255, 255)],  # (170, 122, 45),
             "epic": [(133, 50, 50), (153, 255, 255)],  # (136, 60, 160),
             "uncommon": [(98, 75, 50), (118, 255, 255)],  # (52, 107, 184),
             "common": [(98, 0, 50), (117, 75, 255)]})  # (127, 139, 152)
         golden_color_hsv = [(17, 110, 198), (25, 255, 255)]
-        x2_color_hsv = [(18, 110, 95), (22, 165, 210)]
+        #x2_color_hsv = [(18, 110, 95), (22, 165, 210)] # light background
+        x2_color_hsv = [(14, 150, 90), (16, 200, 210)]
+
+        # ------ DETECT 2X -------
+        x2_image = cards_area[crop_x2_y:crop_x2_y + 2 * crop_half_side,
+                   crop_x2_x:crop_x2_x + 2 * crop_half_side]
+        x2_hsv = cv2.cvtColor(x2_image, cv2.COLOR_BGR2HSV)
+
+        x2 = False
+        x2_mask = cv2.inRange(x2_hsv, x2_color_hsv[0], x2_color_hsv[1])
+        pixel_density = float(cv2.countNonZero(x2_mask)) / float(x2_mask.size)
+        # cv2.imshow("hsv" + str(card_position), x2_hsv)
+        # cv2.imshow("mask" + str(card_position), x2_mask)
+        # print pixel_density
+        if pixel_density > THRESHOLD_X2:
+            x2 = True
+        else:
+            if pixel_density > top_fail_x2[0]:
+                top_fail_x2[0] = pixel_density
+                top_fail_x2[1] = page_count
+                top_fail_x2[2] = card_position
+        top_fail_x2[3] = x2
+        if abs(pixel_density - THRESHOLD_X2) < 0.03 and pixel_density != 0.0:
+            print "X2 ", page_count, card_position, ": ", pixel_density, x2
 
         # ------ DETECT GOLDENS -------
         golden_image = cards_area[crop_golden_y:crop_golden_y + 6 * crop_half_side,
@@ -298,32 +327,16 @@ while True:
         if pixel_density > THRESHOLD_GOLDEN:
             golden = True
             goldens += 1
+            if x2:
+                goldens += 1
         else:
             if pixel_density > top_fail_golden[0]:
                 top_fail_golden[0] = pixel_density
                 top_fail_golden[1] = page_count
                 top_fail_golden[2] = card_position
         top_fail_golden[3] = golden
-
-        # ------ DETECT 2X -------
-        x2_image = cards_area[crop_x2_y:crop_x2_y + 2 * crop_half_side,
-                   crop_x2_x:crop_x2_x + 2 * crop_half_side]
-        x2_hsv = cv2.cvtColor(x2_image, cv2.COLOR_BGR2HSV)
-
-        x2 = False
-        x2_mask = cv2.inRange(x2_hsv, x2_color_hsv[0], x2_color_hsv[1])
-        pixel_density = float(cv2.countNonZero(x2_mask)) / float(x2_mask.size)
-        # cv2.imshow("hsv" + str(count), x2_hsv)
-        # cv2.imshow("mask" + str(count), x2_mask)
-        # print pixel_density
-        if pixel_density > THRESHOLD_X2:
-            x2 = True
-        else:
-            if pixel_density > top_fail_x2[0]:
-                top_fail_x2[0] = pixel_density
-                top_fail_x2[1] = page_count
-                top_fail_x2[2] = card_position
-        top_fail_x2[3] = x2
+        if abs(pixel_density - THRESHOLD_GOLDEN) < 0.03 and pixel_density != 0.0:
+            print "Golden ", page_count, card_position, ": ", pixel_density, golden
 
         # ------ DETECT RARITY -------
         rarity_image = cards_area[crop_rarity_y:crop_rarity_y + 2 * crop_half_side,
@@ -335,9 +348,8 @@ while True:
         for (i, (name, hsv)) in enumerate(rarity_colors_hsv.items()):
             rarity_mask = cv2.inRange(rarity_hsv, hsv[0], hsv[1])
             pixel_density_new = float(cv2.countNonZero(rarity_mask)) / float(rarity_mask.size)
-            if DEBUG_ENABLED:
-                print card_position, ": ", pixel_density_new
-                cv2.imshow("mask" + str(card_position), rarity_mask)
+            # print card_position, ": ", pixel_density_new
+            # cv2.imshow("mask" + name + str(card_position), rarity_mask)
             if pixel_density_new > THRESHOLD_RARITY:
                 if pixel_density_new > pixel_density:
                     pixel_density = pixel_density_new
@@ -348,11 +360,14 @@ while True:
                     top_fail_rarity[1] = page_count
                     top_fail_rarity[2] = card_position
         top_fail_rarity[3] = color
-        if pixel_density - THRESHOLD_RARITY < 0.05 and pixel_density != 0.0:
-            print page_count, card_position, ": ", pixel_density, color
+        if abs(pixel_density - THRESHOLD_RARITY) < 0.03 and pixel_density != 0.0:
+            print "Rarity ", page_count, card_position, ": ", pixel_density, color
 
         card_rarities[color] += 1
-        # if DEBUG_ENABLED:
+        if x2:
+            card_rarities[color] += 1
+
+# if DEBUG_ENABLED:
         #     cv2.imshow("original", rarity_image)
         #     cv2.waitKey(0)
         #     sys.exit()
@@ -374,9 +389,9 @@ while True:
             cv2.putText(cards_area, "2X", (crop_rarity_x - 50, crop_rarity_y - 160), cv2.FONT_HERSHEY_PLAIN, 1,
                         (255, 0, 0), 2)
 
-            # cv2.imshow(str(page_count) + "allcards", card_text_mask)
-    cv2.waitKey(0)
-    sys.exit()
+    # cv2.imshow(str(page_count) + "allcards", cards_area)
+    # cv2.waitKey(0)
+    # sys.exit()
 
     # Click to the next page
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN | win32con.MOUSEEVENTF_ABSOLUTE, 0, 0)
