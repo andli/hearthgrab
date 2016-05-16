@@ -95,8 +95,8 @@ def screenshot_and_crop_to_window():
 
 
 def find_card_page(cropped_window_image):
-    page_color_hsv = [(14, 80, 80), (16, 150, 255)]     # dark background
-    #page_color_hsv = [(16, 45, 140), (28, 140, 255)]   # light background
+    page_color_hsv = [(14, 80, 80), (16, 150, 255)]  # dark background
+    # page_color_hsv = [(16, 45, 140), (28, 140, 255)]   # light background
     page_hsv = cv2.cvtColor(cropped_window_image, cv2.COLOR_RGB2HSV)
     page_mask = cv2.inRange(page_hsv, page_color_hsv[0], page_color_hsv[1])
 
@@ -111,9 +111,9 @@ def find_card_page(cropped_window_image):
     contours_mask = cv2.cvtColor(contours_mask, cv2.COLOR_RGB2GRAY)
     cv2.drawContours(contours_mask, [cnt], 0, (255, 255, 255))
 
-    #cv2.imshow("allcards", contours_mask)
-    #cv2.waitKey(0)
-    #sys.exit()
+    # cv2.imshow("allcards", contours_mask)
+    # cv2.waitKey(0)
+    # sys.exit()
 
     lines = cv2.HoughLinesP(contours_mask, 12, math.pi / 2, h / 2, minLineLength=h * 0.7, maxLineGap=h * 0.7)
     # print lines
@@ -135,9 +135,9 @@ def find_card_page(cropped_window_image):
     if count_lines[0] < 2 or count_lines[1] < 2:
         sys.exit("Error finding card page!")
 
-    #cv2.imshow("allcards", contours_mask)
-    #cv2.waitKey(0)
-    #sys.exit()
+    # cv2.imshow("allcards", contours_mask)
+    # cv2.waitKey(0)
+    # sys.exit()
 
     x, y, w, h = min(x_values), min(y_values), max(x_values) - min(x_values), max(y_values) - min(y_values)
 
@@ -237,6 +237,7 @@ top_fail_golden = [0.0, 0, 0, '']
 # Move the cursor so it does not trigger visual effects
 win32api.SetCursorPos((NEXT_PAGE_CLICK_POINT[0], NEXT_PAGE_CLICK_POINT[1]))
 time.sleep(PAGE_TURN_TIME);
+card_count = 0
 
 while True:
     # Move the cursor so it does not trigger visual effects
@@ -264,23 +265,27 @@ while True:
         text_color_hsv = [(0, 0, 87), (31, 15, 255)]
         card_text_image = cards_area[pt1[1]:pt1[1] + (pt2[1] - pt1[1]), pt1[0]:pt1[0] + (pt2[0] - pt1[0])]
         card_text_image_hsv = cv2.cvtColor(card_text_image, cv2.COLOR_BGR2HSV)
-        card_text_mask = cv2.inRange(card_text_image_hsv, text_color_hsv[0], text_color_hsv[1])
-
+        card_text_mask_first = cv2.inRange(card_text_image_hsv, text_color_hsv[0], text_color_hsv[1])
+        card_text_mask = cv2.resize(card_text_mask_first, (0, 0), fx=8, fy=8)
         card_text_mask_copy = np.copy(card_text_mask)
         _, contours, _ = cv2.findContours(card_text_mask_copy, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         areas = [cv2.contourArea(c) for c in contours]
         valid_contours = []
-        for cnt_index in range(0, len(contours) - 1):
-            if areas[cnt_index] > 3:
+        for cnt_index in range(0, len(contours)):
+            if areas[cnt_index] / card_text_mask.size > 0.006:
                 valid_contours.append(contours[cnt_index])
 
         mask = np.zeros(card_text_mask.shape, np.uint8)
-        for h, cnt in enumerate(valid_contours):
-            cv2.drawContours(mask, [cnt], 0, 255, -1)
-        card_text_mask = cv2.bitwise_and(card_text_mask, card_text_mask, mask=mask)
+        cv2.drawContours(mask, valid_contours, -1, 255, -1)
+        card_text = cv2.bitwise_and(card_text_mask, card_text_mask, mask=mask)
+        pixel_density = float(cv2.countNonZero(card_text)) / float(card_text.size)
 
-        #card_text_mask_r = cv2.resize(card_text_mask, (0, 0), fx=8, fy=8)
-        #cv2.imshow(str(card_position), card_text_mask_r)
+        if pixel_density > 0.01:
+            cv2.imwrite(os.getcwd() + '/resources/grabbed_cards/' + str(page_count) + '-' + str(card_position) + '.png',
+                        card_text)
+
+        # card_text_mask_r = cv2.resize(card_text_mask, (0, 0), fx=8, fy=8)
+        # cv2.imshow(str(card_position), card_text_mask_r)
 
         rarity_colors_hsv = OrderedDict({
             "legendary": [(6, 150, 50), (18, 255, 255)],  # (170, 122, 45),
@@ -288,7 +293,7 @@ while True:
             "uncommon": [(98, 75, 50), (118, 255, 255)],  # (52, 107, 184),
             "common": [(98, 0, 50), (117, 75, 255)]})  # (127, 139, 152)
         golden_color_hsv = [(17, 110, 198), (25, 255, 255)]
-        #x2_color_hsv = [(18, 110, 95), (22, 165, 210)] # light background
+        # x2_color_hsv = [(18, 110, 95), (22, 165, 210)] # light background
         x2_color_hsv = [(14, 150, 90), (16, 200, 210)]
 
         # ------ DETECT 2X -------
@@ -367,7 +372,7 @@ while True:
         if x2:
             card_rarities[color] += 1
 
-# if DEBUG_ENABLED:
+        # if DEBUG_ENABLED:
         #     cv2.imshow("original", rarity_image)
         #     cv2.waitKey(0)
         #     sys.exit()
@@ -419,23 +424,13 @@ while True:
         break
     else:
         page_count += 1
+        card_count += 1
 
 end_time = time.clock()
 print("Collected all cards in %.2f seconds." % (end_time - start_time))
 print("Scanned " + str(page_count) + " pages.")
 
 sys.exit()
-# Save all found cards
-print("> Saving all found cards")
-start_time = time.clock()
-card_index = 0
-for card in grabbed_cards:
-    cv2.imwrite(os.getcwd() + '/resources/grabbed_cards/' + str(card_index) + '.png', card[0])
-    card_index += 1
-    update_progress(float(card_index) / float(len(grabbed_cards)), card_index)
-end_time = time.clock()
-print(" in %.2f seconds." % (end_time - start_time))
-
 # Match all found cards
 print("> Matching all found cards")
 
